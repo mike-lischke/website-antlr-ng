@@ -1,0 +1,196 @@
+/*
+ * Copyright (c) Mike Lischke. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ */
+
+@font-face {
+    font-family: 'Godber';
+    src: url('../fonts/Godber.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Source Code Pro';
+    src: url('../fonts/Source Code Pro for Powerline.otf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Source Code Pro';
+    src: url('../fonts/Source Code Pro Light for Powerline.otf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Source Code Pro';
+    src: url('../fonts/Source Code Pro Medium for Powerline.otf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Source Code Pro';
+    src: url('../fonts/Source Code Pro Bold for Powerline.otf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+}
+
+:root {
+    font-family: OpenSans, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    min-width: 800px;
+    color: var(--foreground);
+    background-color: var(--background);
+    font-family: Robot, Helvetica, "Arial", "sans-serif";
+    font-weight: 400;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.ang.documenation .pageContent a {
+    display: contents;
+    align-self: auto;
+}
+
+a {
+    color: var(--textLink-activeForeground);
+}
+
+a:hover {
+    background-color: var(--settings-rowHoverBackground);
+}
+
+.ang .antlrng {
+    font-family: Godber, sans-serif;
+    font-size: 130%;
+    display: contents;
+}
+
+.ang.menu {
+    flex: 0 0 24px;
+    padding: 2px 16px;
+    overflow-x: auto;
+    background-color: #000000;
+    color: var(--menu-foreground);
+    font-size: 14px;
+}
+
+.ang.menu .menu-item {
+    padding: 0 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+}
+
+.ang.menu img {
+    width: 20px;
+    height: 20px;
+}
+
+.ang .header {
+    flex: 0 0 350px;
+    color: #000;
+}
+
+.ang .main {
+    flex: 1 0 auto;
+    padding: 0 300px
+}
+
+.ang#title-host {
+    padding-bottom: 50px
+}
+
+.ang .tag-line {
+    font-size: 50px;
+    font-weight: 100;
+    padding: 20px 0;
+}
+
+.ang .container.highlight {
+    flex: 0 0 auto;
+    position: relative;
+    margin-top: -80px;
+
+    z-index: 2;
+
+    max-width: var(--content-width);
+
+    margin-left: auto;
+    margin-right: auto;
+
+    box-shadow: 0 5px 25px #00000080;
+}
+
+.ang .grammar-example {
+    height: 250px;
+    z-index: 2;
+}
+
+.ang .zigzag {
+    --mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50%/20px 100%;
+    -webkit-mask: var(--mask);
+    mask: var(--mask);
+}
+
+.ang .home-section {
+    flex: 1 0 auto;
+    width: 100%;
+    gap: 50px;
+    padding-bottom: 50px;
+}
+
+.ang .section-heading {
+    flex: 0 0 auto;
+    font-size: 30px;
+    font-weight: 300;
+    padding: 10px 0;
+
+    font-weight: 400;
+}
+
+.ang .section-image {
+    flex: 0 0 auto;
+    height: 160px;
+}
+
+.ang .section-text {
+    white-space: pre-line;
+}
+
+.ang pre {
+    margin: 10px 100px 10px 10px;
+    padding: 10px;
+}
+
+.ang .note {
+    display: block;
+    margin: 20px 20px 20px 0;
+    padding: 20px;
+
+    border: solid 1px var(--radio-activeBorder);
+    border-left-width: 30px;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color: #ccc;
+        background-color: #1a1a1a;
+    }
+}

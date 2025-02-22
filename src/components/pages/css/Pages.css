@@ -1,0 +1,146 @@
+/*
+ * Copyright (c) Mike Lischke. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ */
+
+.ang.pageHost {
+    height: 100%;
+    flex: 1 1 auto;
+    font-weight: 400;
+}
+
+span.bold {
+    font-weight: 800;
+}
+
+.ang.pageContent {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 0 20px;
+    white-space: wrap;
+}
+
+.ang .header .title {
+    font-size: 100px;
+    font-family: Godber, sans-serif;
+    z-index: 1;
+    padding: 0;
+    margin: -20px 0 -20px 0;
+}
+
+.ang.documentation .sidebar {
+    flex: 0 0 300px;
+}
+
+.ang.documentation .tabulator-col-title {
+    font-size: 30px;
+    font-family: Godber, sans-serif;
+    padding: 0;
+    margin: 0 3px;
+}
+
+.ang .header .subtitle {
+    font-size: 25px;
+    font-family: Godber, 'OpenSans', sans-serif;
+    font-weight: 800;
+    z-index: 1;
+}
+
+.ang .header .subtitle2 {
+    font-size: 18px;
+    font-family: 'OpenSans', sans-serif;
+    z-index: 1;
+}
+
+.ang .header .logo {
+    z-index: 1;
+    width: auto;
+    height: 150px;
+    padding-right: 40px;
+    margin-top: -50px
+}
+
+.ang .header .gradient {
+    position: absolute;
+    height: 350px;
+    width: 100%;
+    border: none;
+    background-image: linear-gradient(-45deg, #e19c77 0%, #59a49a 100%);
+}
+
+.ang .header .background {
+    position: absolute;
+    height: 350px;
+    width: 100%;
+    border: none;
+    background-image: url(../../../assets/images/writing1.svg);
+    background-repeat: repeat;
+    background-size: 500px auto;
+    background-attachment: fixed;
+    opacity: 25%;
+}
+
+.ang.sidebar .treeGrid.tabulator {
+    font-size: 16px;
+    background-color: var(--sideBar-background);
+    padding: 0 10px;
+    width: 100%;
+}
+
+.ang.sidebar .treeGrid.tabulator .treeToggle {
+    display: none;
+}
+
+.ang.sidebar .treeGrid.tabulator .tabulator-row .tabulator-cell {
+    display: flex;
+    flex-direction: row;
+}
+
+.ang.sidebar .treeGrid.tabulator .tabulator-header .tabulator-col {
+    padding: 0;
+    border: none;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.ang.documentation #grammar-syntax-container h3 {
+    padding: 0;
+    margin: 40px 0 0 0;
+    font-weight: 800;
+    font-family: "Source Code Pro", monospace;
+}
+
+.ang.documentation #grammar-syntax-container svg {
+    flex: 0 0 auto;
+}
+
+.ang.documentation .tabContainer {
+    flex: 0 0 30px;
+    padding: 0;
+    margin: 0;
+    font-size: 13px;
+}
+
+.ang.documentation #logoBox {
+    flex: 0 0 250px;
+    padding-right: 100px;
+}
+
+.ang.documentation .logo {
+    flex: 0 0 200px;
+    height: 200px;
+    padding: 0;
+    margin: 10px 50px 10px 0;
+}
+
+.ang.documentation table {
+    border: solid 1px lightgray;
+    border-collapse: collapse;
+    margin: 10px 100px 15px 20px;
+    overflow: hidden;
+}
+
+.ang.documentation table td {
+    border: solid 1px lightgray;
+    padding: 5px 15px;
+}

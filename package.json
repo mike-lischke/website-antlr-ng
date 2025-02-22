@@ -1,0 +1,40 @@
+{
+    "private": true,
+    "type": "module",
+    "homepage": ".",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build"
+    },
+    "dependencies": {
+        "@fontsource/open-sans": "5.1.1",
+        "@vscode/codicons": "^0.0.36",
+        "classnames": "2.5.1",
+        "highlight.js": "^11.11.1",
+        "marked": "^15.0.7",
+        "marked-highlight": "^2.2.1",
+        "preact": "10.25.4",
+        "preact-markup": "^2.1.1",
+        "tabulator-tables": "6.3.1"
+    },
+    "devDependencies": {
+        "@eslint/js": "9.17.0",
+        "@preact/preset-vite": "2.9.3",
+        "@stylistic/eslint-plugin": "2.12.1",
+        "@stylistic/eslint-plugin-ts": "2.12.1",
+        "@types/eslint__js": "8.42.3",
+        "@types/tabulator-tables": "^6.2.3",
+        "@typescript-eslint/eslint-plugin": "8.18.1",
+        "@typescript-eslint/parser": "8.18.1",
+        "eslint": "9.17.0",
+        "eslint-plugin-import": "2.31.0",
+        "eslint-plugin-jsdoc": "50.6.1",
+        "eslint-plugin-prefer-arrow": "1.2.3",
+        "typescript": "5.7.3",
+        "typescript-eslint": "8.24.0",
+        "vite": "6.1.0"
+    },
+    "eslintConfig": {
+        "extends": "preact"
+    }
+}

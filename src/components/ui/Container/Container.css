@@ -1,0 +1,50 @@
+.ang.container {
+    display: flex;
+    position: relative;
+    overflow: auto;
+}
+
+.ang.container.topLeft {
+    align-items: top;
+    justify-content: flex-start;
+}
+
+.ang.container.topCenter {
+    align-items: top;
+    justify-content: center;
+}
+
+.ang.container.topRight {
+    align-items: top;
+    justify-content: flex-end;
+}
+
+.ang.container.middleLeft {
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.ang.container.middleCenter {
+    align-items: center;
+    justify-content: center;
+}
+
+.ang.container.middleRight {
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.ang.container.bottomLeft {
+    align-items: flex-end;
+    justify-content: flex-start;
+}
+
+.ang.container.bottomCenter {
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.ang.container.bottomRight {
+    align-items: flex-end;
+    justify-content: flex-end;
+}

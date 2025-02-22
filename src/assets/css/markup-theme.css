@@ -1,0 +1,164 @@
+/*
+ * Copyright (c) Mike Lischke. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ */
+
+/** A pretty theme for antlr-ng markdown code blocks. Taken from my VS Code extension vscode-antlr4. */
+
+pre code.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 1em
+}
+
+code.hljs {
+    padding: 3px 5px
+}
+
+.hljs {
+    background: #282828;
+    color: #E0E0E0
+}
+
+.hljs-subst {
+    color: white;
+}
+
+/* purposely ignored */
+.hljs-formula,
+.hljs-attr,
+.hljs-property,
+.hljs-params {
+    background: none;
+}
+
+.hljs-comment {
+    color: #0987cb
+}
+
+.hljs-comment.single-line {
+    color: #52A0CB
+}
+
+.hljs-tag,
+.hljs-punctuation {
+    color: #BBBBBB
+}
+
+.hljs-tag .hljs-name,
+.hljs-tag .hljs-attr {
+    color: #444
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-meta .hljs-keyword,
+.hljs-doctag {
+    color: #a9b5ad;
+    font-weight: bold
+}
+
+.hljs-name {
+    color: #CC4E52;
+}
+
+.hljs-attribute {
+    color: #5aaa7f;
+}
+
+.hljs-type,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-quote,
+.hljs-template-tag,
+.hljs-deletion {
+    font-weight: bold;
+    color: #78a6a6
+}
+
+.hljs-string,
+.hljs-number {
+    color: #E5BD46
+}
+
+.hljs-title,
+.hljs-section {
+    color: #c2c29a;
+    font-weight: bold
+}
+
+.hljs-regexp {
+    color: #FF6f30
+}
+
+.hljs-symbol,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-link,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+    color: #E59337
+}
+
+.hljs-operator {
+    color: #aaa9b5
+}
+
+.hljs-literal {
+    color: rgb(212, 255, 94)
+}
+
+.hljs-built_in,
+.hljs-bullet,
+.hljs-code,
+.hljs-addition {
+    color: #9b90c3
+}
+
+.hljs-meta {
+    color: #9e9e9e
+}
+
+.hljs-rule-name {
+    color: #c2c299
+}
+
+.hljs-lexer-command-expression {
+    color: #63BF8D
+}
+
+.hljs-lexer-command-name {
+    color: #c2c299
+}
+
+.hljs-action-name {
+    color: #CC4E52
+}
+
+.hljs-action-text {
+    color: #7D7D7D
+}
+
+.hljs-rule-ref {
+    color: #78A6A6
+}
+
+.hljs-token-ref {
+    color: #D7D7C7;
+}
+
+.hljs-meta .hljs-string {
+    color: #e5bd46
+}
+
+.hljs-emphasis {
+    font-style: italic
+}
+
+.hljs-strong {
+    font-weight: bold
+}
+
+.hljs-underline {
+    text-decoration: underline;
+}
