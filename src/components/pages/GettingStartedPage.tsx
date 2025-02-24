@@ -123,6 +123,14 @@ export class GettingStartedPage extends PageBase {
                     use <code>-v false</code> to disable the listener generation (or just don't specify
                     <code>-v</code> at all).
                 </div><br />
+                <div className="note">
+                    <b>Attention:</b> To avoid confusing optional values and grammar names (arguments) do not specify
+                    parameters directly before the grammar names. For example `-l` can optionally take a boolean.
+                    Omitting that like in `-l MyGrammar.g4` makes the tool think that `MyGrammar.g4` is the boolean
+                    value for the `-l` option. So either sort the parameters in a way that keeps those with a value
+                    (like the output path) directly before the grammar file names, or use `--` to separate
+                    options and arguemnts.
+                </div>
 
                 <div>
                     Another pretty common use case is to generate parsers and lexer as part of a TypeScript project.
