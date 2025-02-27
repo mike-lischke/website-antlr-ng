@@ -1,0 +1,78 @@
+/*
+ * Copyright (c) Mike Lischke. All rights reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ */
+
+.loading-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: auto;
+}
+
+.loading-indicator::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 10px solid transparent;
+    border-top-color: #b61a92;
+    animation: spin 2.5s linear infinite;
+}
+
+.loading-indicator::after {
+    content: '';
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    border-radius: 50%;
+    border: 10px solid transparent;
+    border-bottom-color: #dd1717;
+    animation: spin 3s linear infinite reverse;
+}
+
+.loading-indicator-spinner {
+    position: absolute;
+    width: 60%;
+    height: 60%;
+    border: 10px solid transparent;
+    border-left-color: #1aa1b6;
+    border-radius: 50%;
+    animation: spin 1.5s linear infinite;
+}
+
+.loading-indicator span {
+    position: absolute;
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--foreground);
+    text-transform: uppercase;
+    animation: fade 4s ease-in-out infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes fade {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.1;
+    }
+
+}

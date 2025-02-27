@@ -7,9 +7,10 @@ import "../../assets/css/markup-theme.css";
 import "./css/Pages.css";
 
 import type { ComponentChild } from "preact";
+import Router from "preact-router";
 
 import { Markdown } from "../Markdown/Markdown";
-import { SideBar, type ISection } from "../Sidebar.js";
+import { Page, SideBar, type ISection } from "../Sidebar.js";
 import { ComponentBase } from "../ui/Component/ComponentBase.js";
 import { Container, Orientation } from "../ui/Container/Container.js";
 import { GettingStartedPage } from "./GettingStartedPage";
@@ -17,50 +18,69 @@ import { GrammarsPage } from "./GrammarsPage";
 import { GrammarSyntaxPage } from "./GrammarSyntaxPage.js";
 import { IntroductionPage } from "./IntroductionPage.js";
 import { OptionsPage } from "./OptionsPage";
-import { Page, type PageBase } from "./PageBase";
 import { ParserRulesPage } from "./ParserRulesPage";
+import { ScrollToAnchor } from "../ScrollToAnchor";
 
 interface IDocumentationState {
-    currentSection: ISection;
-
     // The content of the currently selected markdown file.
     markdownContent?: string;
 }
 
 // The content of the sidebar tree.
 const sections: ISection[] = [
-    { title: "Introduction", id: Page.Introduction },
-    { title: "Getting Started", id: Page.GettingStarted },
+    { title: "Introduction", id: Page.Introduction, urlPath: "/documentation" },
+    { title: "Getting Started", id: Page.GettingStarted, urlPath: "/documentation/getting-started" },
     {
-        title: "Grammars", id: Page.Grammars, children: [
-            { title: "Grammar Syntax", id: Page.GrammarSyntax },
-            { title: "Options", id: Page.Options },
-            { title: "Parser Rules", id: Page.ParserRules },
-            { title: "Lexer Rules", id: Page.LexerRules, file: "lexer-rules.md" },
-            { title: "Wildcard", id: Page.Wildcard, file: "wildcard.md" },
-            { title: "Unicode", id: Page.Unicode, file: "unicode.md" },
+        title: "Grammars", id: Page.Grammars, urlPath: "/documentation/grammars", children: [
+            { title: "Grammar Syntax", id: Page.GrammarSyntax, urlPath: "/documentation/grammars/grammar-syntax" },
+            { title: "Options", id: Page.Options, urlPath: "/documentation/grammars/options" },
+            { title: "Parser Rules", id: Page.ParserRules, urlPath: "/documentation/grammars/parser-rules" },
+            {
+                title: "Lexer Rules",
+                id: Page.LexerRules,
+                file: "lexer-rules.md",
+                urlPath: "/documentation/grammars/lexer-rules"
+            },
+            { title: "Wildcard", id: Page.Wildcard, file: "wildcard.md", urlPath: "/documentation/grammars/wildcard" },
+            { title: "Unicode", id: Page.Unicode, file: "unicode.md", urlPath: "/documentation/grammars/unicode" },
         ]
     },
-    { title: "Actions", id: Page.Actions, file: "actions.md" },
-    { title: "Interpreters", id: Page.Interpreters, file: "interpreters.md" },
-    { title: "Left Recursion", id: Page.LeftRecursion, file: "left-recursion.md" },
-    { title: "Listeners and Visitors", id: Page.ListenersAndVisitors, file: "listeners.md" },
-    { title: "Parsing Binary Content", id: Page.ParsingBBinaryContent, file: "parsing-binary-files.md" },
-    { title: "Predicates", id: Page.Predicates, file: "predicates.md" },
-    { title: "Tree Matching", id: Page.TreeMatching, file: "tree-matching.md" },
-    { title: "Creating a Language Target", id: Page.CreatingALanguageTarget, file: "creating-a-language-target.md" },
-    { title: "Building", id: Page.Building, file: "building-antlr.md" },
-    { title: "Resources", id: Page.Resources, file: "resources.md" },
+    { title: "Actions", id: Page.Actions, file: "actions.md", urlPath: "/documentation/actions" },
+    { title: "Interpreters", id: Page.Interpreters, file: "interpreters.md", urlPath: "/documentation/interpreters" },
+    {
+        title: "Left Recursion",
+        id: Page.LeftRecursion,
+        file: "left-recursion.md",
+        urlPath: "/documentation/left-recursion"
+    },
+    {
+        title: "Listeners and Visitors",
+        id: Page.ListenersAndVisitors,
+        file: "listeners.md",
+        urlPath: "/documentation/listeners-and-visitors"
+    },
+    {
+        title: "Parsing Binary Content",
+        id: Page.ParsingBBinaryContent,
+        file: "parsing-binary-files.md",
+        urlPath: "/documentation/parsing-binary-content"
+    },
+    { title: "Predicates", id: Page.Predicates, file: "predicates.md", urlPath: "/documentation/predicates" },
+    {
+        title: "Tree Matching",
+        id: Page.TreeMatching,
+        file: "tree-matching.md",
+        urlPath: "/documentation/tree-matching"
+    },
+    {
+        title: "Creating a Language Target",
+        id: Page.CreatingALanguageTarget,
+        file: "creating-a-language-target.md",
+        urlPath: "/documentation/creating-a-language-target"
+    },
+    { title: "Building", id: Page.Building, file: "building-antlr.md", urlPath: "/documentation/building" },
+    { title: "Resources", id: Page.Resources, file: "resources.md", urlPath: "/documentation/resources" },
 ];
-
-const pageIdToPageClassMap = new Map<Page, typeof PageBase>([
-    [Page.Introduction, IntroductionPage as typeof PageBase],
-    [Page.GettingStarted, GettingStartedPage as typeof PageBase],
-    [Page.GrammarSyntax, GrammarSyntaxPage as typeof PageBase],
-    [Page.Grammars, GrammarsPage as typeof PageBase],
-    [Page.Options, OptionsPage as typeof PageBase],
-    [Page.ParserRules, ParserRulesPage as typeof PageBase],
-]);
 
 export class Documentation extends ComponentBase<{}, IDocumentationState> {
 
@@ -68,64 +88,11 @@ export class Documentation extends ComponentBase<{}, IDocumentationState> {
         super({});
 
         this.state = {
-            currentSection: { title: "Introduction", id: Page.Introduction },
         };
     }
 
-    public override componentDidUpdate(prevProps: {}, prevState: IDocumentationState): void {
-        if (prevState.currentSection !== this.state.currentSection) {
-            this.setState({ markdownContent: undefined });
-        }
-    }
-
     public render(): ComponentChild {
-        const { currentSection, markdownContent } = this.state;
-
         const className = this.getEffectiveClassNames(["documentation", "pageHost"]);
-
-        let page: ComponentChild = null;
-
-        if (currentSection.file) {
-            if (markdownContent === undefined) {
-                void this.loadMarkdownContent(currentSection.file);
-                page = <div>Loading...</div>;
-            } else {
-                page = <Container orientation={Orientation.TopDown} className="pageContent">
-                    <Markdown text={markdownContent} options={{}} />
-                </Container >;
-            }
-        } else {
-            if (markdownContent !== undefined) {
-                this.setState({ markdownContent: undefined });
-            }
-
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            const PageClass = pageIdToPageClassMap.get(currentSection.id);
-            if (PageClass) {
-                page = <PageClass
-                    navigateToPage={(pageId) => {
-                        const section = sections.find((section) => {
-                            return section.id === pageId;
-                        });
-
-                        this.setState({ currentSection: section });
-                    }}
-                />;
-            }
-        }
-
-        // Update the page title from the section list.
-        sections.forEach((section) => {
-            if (section.id === currentSection.id) {
-                document.title = "antlr-ng " + section.title;
-            } else if (section.children) {
-                section.children.forEach((child) => {
-                    if (child.id === currentSection.id) {
-                        document.title = "antlr-ng " + child.title;
-                    }
-                });
-            }
-        });
 
         return (
             <Container
@@ -134,23 +101,37 @@ export class Documentation extends ComponentBase<{}, IDocumentationState> {
             >
                 <SideBar
                     sections={sections}
-                    currentSection={currentSection}
-                    onSelectSection={(section) => {
-                        this.setState({ currentSection: section });
-                    }}
+                    currentPath={""}
                 />
-                {page}
+                <Router>
+                    <ScrollToAnchor path="/:rest*" />
+                    <IntroductionPage path="/documentation" />
+                    <GettingStartedPage path="/documentation/getting-started" />
+                    <GrammarsPage path="/documentation/grammars/:id*" />
+                    <GrammarSyntaxPage path="/documentation/grammars/grammar-syntax" />
+                    <OptionsPage path="/documentation/grammars/options" />
+                    <ParserRulesPage path="/documentation/grammars/parser-rules" />
+                    <Markdown path="/documentation/grammars/lexer-rules" fileName="/lexer-rules.md" />
+                    <Markdown path="/documentation/grammars/wildcard" fileName="/wildcard.md" />
+                    <Markdown path="/documentation/grammars/unicode" fileName="/unicode.md" />
+                    <Markdown path="/documentation/actions" fileName="/actions.md" />
+                    <Markdown path="/documentation/interpreters" fileName="/interpreters.md" />
+                    <Markdown path="/documentation/left-recursion" fileName="/left-recursion.md" />
+                    <Markdown path="/documentation/listeners-and-visitors" fileName="/listeners.md" />
+                    <Markdown
+                        path="/documentation/parsing-binary-content"
+                        fileName="/parsing-binary-files.md"
+                    />
+                    <Markdown path="/documentation/predicates" fileName="/predicates.md" />
+                    <Markdown path="/documentation/tree-matching" fileName="/tree-matching.md" />
+                    <Markdown
+                        path="/documentation/creating-a-language-target"
+                        fileName="/creating-a-language-target.md"
+                    />
+                    <Markdown path="/documentation/building" fileName="/building-antlr.md" />
+                    <Markdown path="/documentation/resources" fileName="/resources.md" />
+                </Router>
             </Container>
         );
-    }
-
-    private async loadMarkdownContent(file: string): Promise<void> {
-        try {
-            const response = await fetch(file);
-            const text = await response.text();
-            this.setState({ markdownContent: text });
-        } catch (error) {
-            console.error("Error loading Markdown file:", error);
-        }
     }
 }

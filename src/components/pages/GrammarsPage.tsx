@@ -4,10 +4,10 @@
  */
 
 import type { ComponentChild } from "preact";
-import { PageBase } from "./PageBase";
 import { Container, Orientation } from "../ui/Container/Container";
+import { ComponentBase } from "../ui/Component/ComponentBase";
 
-export class GrammarsPage extends PageBase {
+export class GrammarsPage extends ComponentBase {
     public override render(): ComponentChild {
         return (
             <Container className="pageContent" orientation={Orientation.TopDown}>

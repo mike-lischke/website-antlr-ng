@@ -7,8 +7,9 @@
 
 import { type ComponentChild } from "preact";
 
+import { highlightCodeBlocks } from "../../dom-helpers";
+import { ComponentBase } from "../ui/Component/ComponentBase";
 import { Container, Orientation } from "../ui/Container/Container";
-import { PageBase } from "./PageBase";
 
 const helpOutput = `> antlr-ng -h
 Usage: program [options] <grammar...>
@@ -75,9 +76,9 @@ const codeGenerationCode = `
     };
 `;
 
-export class GettingStartedPage extends PageBase {
+export class GettingStartedPage extends ComponentBase {
     public override componentDidMount(): void {
-        this.highlightCodeBlocks();
+        highlightCodeBlocks();
     }
 
     public override render(): ComponentChild {

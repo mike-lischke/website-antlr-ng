@@ -12,12 +12,13 @@ import "./assets/css/theme.css";
 
 import { Component, render, type ComponentChild } from "preact";
 
-import { Documentation } from "./components/pages/Documentation.js";
-import { LandingPage } from "./components/pages/LandingPage.js";
-import { MainMenu } from "./components/ui/MainMenu/MainMenu.js";
-import { Downloads } from "./components/pages/Download.js";
 import { DevTools } from "./components/pages/DevTools.js";
+import { Documentation } from "./components/pages/Documentation.js";
+import { Downloads } from "./components/pages/Download.js";
+import { LandingPage } from "./components/pages/LandingPage.js";
 import { Playground } from "./components/pages/Playground.js";
+import { MainMenu } from "./components/ui/MainMenu/MainMenu.js";
+import Router, { Route } from "preact-router";
 
 export const enum PageType {
     Home,
@@ -42,56 +43,24 @@ export class App extends Component<{}, IAppState> {
     }
 
     public override render(): ComponentChild {
-        const { currentSection } = this.state;
-
         const menu = <MainMenu
             onChangeSection={(section) => {
                 this.setState({ currentSection: section });
             }}
         />;
 
-        switch (currentSection) {
-            case PageType.Home: {
-                return <>
-                    {menu}
-                    <LandingPage />
-                </>;
-            }
-
-            case PageType.Documentation: {
-                return <>
-                    {menu}
-                    <Documentation />
-                </>;
-            }
-
-            case PageType.Download: {
-                return <>
-                    {menu}
-                    <Downloads />
-                </>;
-            }
-
-            case PageType.DevTools: {
-                return <>
-                    {menu}
-                    <DevTools />
-                </>;
-            }
-
-            case PageType.Playground: {
-                return <>
-                    {menu}
-                    <Playground />
-                </>;
-            }
-
-            default: {
-                return <>
-                    {menu}
-                </>;
-            }
-        }
+        return (
+            <>
+                {menu}
+                <Router>
+                    <Route path="/" component={LandingPage} />
+                    <Route path="/documentation/:id*" component={Documentation} />
+                    <Route path="/downloads" component={Downloads} />
+                    <Route path="/devtools" component={DevTools} />
+                    <Route path="/playground" component={Playground} />
+                </Router>
+            </>
+        );
     }
 }
 

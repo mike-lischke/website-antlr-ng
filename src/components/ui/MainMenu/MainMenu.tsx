@@ -8,7 +8,6 @@ import githhubIconLight from "../../../assets/images/github-icon-light.svg";
 import type { ComponentChild } from "preact";
 
 import { PageType } from "../../../index.js";
-import { Button } from "../Button/Button.js";
 import { ComponentBase, type IComponentProperties } from "../Component/ComponentBase.js";
 import { Container, ContentAlignment, Orientation } from "../Container/Container.js";
 
@@ -28,37 +27,12 @@ export class MainMenu extends ComponentBase<IMainMenuProperties> {
                 crossAlignment={ContentAlignment.Center}
             >
                 <label className="menu-item">&copy; 2025, Mike Lischke</label>
-                <Button
-                    caption="Home"
-                    className="menu-item"
-                    style={{ marginLeft: "auto" }}
-                    onClick={() => {
-                        this.handleSectionChange(PageType.Home);
-                    }} />
-                <Button
-                    caption="Documentation"
-                    className="menu-item"
-                    onClick={() => {
-                        this.handleSectionChange(PageType.Documentation);
-                    }} />
-                <Button
-                    caption="Download"
-                    className="menu-item"
-                    onClick={() => {
-                        this.handleSectionChange(PageType.Download);
-                    }} />
-                <Button
-                    caption="Dev Tools"
-                    className="menu-item"
-                    onClick={() => {
-                        this.handleSectionChange(PageType.DevTools);
-                    }} />
-                <Button
-                    caption="Playground"
-                    className="menu-item"
-                    onClick={() => {
-                        this.handleSectionChange(PageType.Playground);
-                    }} />
+                <a className="menu-item" href="/" style={{ marginLeft: "auto" }}>Home</a>
+                <a className="menu-item" href="/documentation">Documentation</a>
+                <a className="menu-item" href="/downloads">Downloads</a>
+                <a className="menu-item" href="/devtools">Developent Tools</a>
+                <a className="menu-item" href="/playground">Playground</a>
+
                 <a href="https://github.com/mike-lischke/antlr-ng" style="margin-left: auto">
                     <img src={githhubIconLight} />
                 </a>

@@ -11,17 +11,57 @@ import hljs from "highlight.js";
 
 import Markup from "preact-markup";
 
-import { ComponentBase, type IComponentProperties } from "../ui/Component/ComponentBase";
+import { ComponentBase, type IComponentProperties, type IComponentState } from "../ui/Component/ComponentBase";
+import { LoadingIndicator } from "../ui/LoadingIndicator/LoadingIndicator";
+import { Container, Orientation } from "../ui/Container/Container";
 
 export interface IMarkdownProperties extends IComponentProperties {
-    text: string;
-    options: MarkedOptions;
+    fileName: string;
+    options?: MarkedOptions;
+}
+
+interface IMarkdownState extends IComponentState {
+    pending: boolean;
+    markdownContent?: string;
 }
 
 /** A class to render markdown code as html. */
-export class Markdown extends ComponentBase<IMarkdownProperties> {
+export class Markdown extends ComponentBase<IMarkdownProperties, IMarkdownState> {
+    public constructor(props: IMarkdownProperties) {
+        super(props);
+        this.state = {
+            pending: false,
+            markdownContent: undefined,
+        };
+    }
+
+    public override componentDidUpdate(previousProps: Readonly<IMarkdownProperties>): void {
+        if (previousProps.fileName !== this.props.fileName) {
+            this.setState({ pending: false, markdownContent: undefined });
+        }
+    }
+
     public override render(props: IMarkdownProperties): ComponentChild {
-        const { text, options } = props;
+        const { fileName, options } = props;
+        const { pending, markdownContent } = this.state;
+
+        if (markdownContent === undefined) {
+            if (pending) {
+                return (
+                    <LoadingIndicator />
+                );
+            }
+
+            void this.loadMarkdownContent(fileName).then((text) => {
+                this.setState({ pending: false, markdownContent: text });
+            });
+
+            setTimeout(() => {
+                this.setState({ pending: true });
+            }, 500);
+
+            return null;
+        }
 
         const marked = new Marked(
             markedHighlight({
@@ -36,8 +76,23 @@ export class Markdown extends ComponentBase<IMarkdownProperties> {
         );
 
         return (
-            <Markup {...props} markup={marked.parse(text, options) as string} trim={false} type="html" />
+            <Container className="pageContent" orientation={Orientation.TopDown}>
+                <Markup {...props} markup={marked.parse(markdownContent, options) as string} trim={false} type="html" />
+            </Container>
         );
+    }
+
+    private async loadMarkdownContent(file: string): Promise<string | undefined> {
+        try {
+            const response = await fetch(file);
+            const text = await response.text();
+
+            return text;
+        } catch (error) {
+            console.error("Error loading Markdown file:", error);
+
+            return undefined;
+        }
     }
 
     static {

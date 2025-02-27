@@ -7,15 +7,11 @@ import logo from "../../assets/images/logo4.svg";
 
 import { type ComponentChild } from "preact";
 
+import { ComponentBase } from "../ui/Component/ComponentBase";
 import { Container, ContentAlignment, Orientation } from "../ui/Container/Container.js";
-import { Page, PageBase, type IPageBaseProperties } from "./PageBase";
 
-export class IntroductionPage extends PageBase {
+export class IntroductionPage extends ComponentBase {
     public static title = "antlr-ng Introduction";
-
-    public constructor(props: IPageBaseProperties) {
-        super(props);
-    }
 
     public override render(): ComponentChild {
         return (
@@ -66,11 +62,9 @@ export class IntroductionPage extends PageBase {
                 <h2>Usage and Integration</h2>
 
                 <div>For a detailed description of how to use <span className="antlrng">antlr-ng</span> see the <a
-                    href="#"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        this.navigateToPage(Page.GettingStarted);
-                    }}>Getting Started Page
+                    href="/documentation/getting-started"
+                >
+                    Getting Started Page
                 </a>.</div>
 
                 <h2>Compatibility and Migration</h2>

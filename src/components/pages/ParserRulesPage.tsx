@@ -3,15 +3,16 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import xyz from "../../assets/images/xyz.png";
 import xyzOpt from "../../assets/images/xyz-opt.png";
 import xyzPlus from "../../assets/images/xyz-plus.png";
 import xyzStar from "../../assets/images/xyz-star.png";
+import xyz from "../../assets/images/xyz.png";
 
 import { type ComponentChild } from "preact";
 
+import { highlightCodeBlocks } from "../../dom-helpers";
+import { ComponentBase } from "../ui/Component/ComponentBase";
 import { Container, Orientation } from "../ui/Container/Container";
-import { PageBase } from "./PageBase";
 
 const snippet1 = `/** Javadoc comment can precede rule */
 retstat : 'return' expr ';' ;`
@@ -204,9 +205,9 @@ const snippet34 = `[«action»]`;
 
 const snippet35 = `{«action»}?`;
 
-export class ParserRulesPage extends PageBase {
+export class ParserRulesPage extends ComponentBase {
     public override componentDidMount(): void {
-        this.highlightCodeBlocks();
+        highlightCodeBlocks();
     }
 
     public override render(): ComponentChild {

@@ -14,7 +14,7 @@ import grammarExample from "../../assets/images/grammar-example.png";
 import { type ComponentChild } from "preact";
 
 import { HomeSection } from "../HomeSection.js";
-import { ComponentBase } from "../ui/Component/ComponentBase.js";
+import { ComponentBase, type IComponentProperties } from "../ui/Component/ComponentBase.js";
 import { Container, ContentAlignment, Orientation } from "../ui/Container/Container.js";
 
 const sectionContent = [{
@@ -59,7 +59,11 @@ const sectionContent = [{
     image: tooling,
 }];
 
-export class LandingPage extends ComponentBase {
+export interface ILandingPageProperties extends IComponentProperties {
+    path?: string;
+}
+
+export class LandingPage extends ComponentBase<ILandingPageProperties> {
     public override componentDidMount(): void {
         document.title = "antlr-ng Parser Generator";
     }

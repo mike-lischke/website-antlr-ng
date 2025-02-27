@@ -16,7 +16,7 @@
             ],
             "react-dom": [
                 "./node_modules/preact/compat/"
-            ]
+            ],
         },
         "lib": [
             "ESNext",

@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import cx from "classnames";
+import hljs from "highlight.js";
 
 /**
  * Conditionally returns a CSS class name from a list of names or a single name.
@@ -24,11 +24,14 @@ export const classFromProperty = (value: unknown, c: string | string[]): string 
         }
 
         return c[value as number];
-    } else {
-        if (!value) {
-            return undefined;
-        }
     }
 
     return c;
+};
+
+export const highlightCodeBlocks = () => {
+    const codeBlocks = document.querySelectorAll('pre code[class^="language-"]');
+    codeBlocks.forEach((block) => {
+        hljs.highlightElement(block as HTMLElement);
+    });
 };

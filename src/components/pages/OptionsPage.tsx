@@ -4,7 +4,9 @@
  */
 
 import type { ComponentChild } from "preact";
-import { Page, PageBase } from "./PageBase";
+
+import { highlightCodeBlocks } from "../../dom-helpers";
+import { ComponentBase } from "../ui/Component/ComponentBase";
 import { Container, Orientation } from "../ui/Container/Container";
 
 const snippet1 = "options { name1 = value1; ... nameN = valueN; };";
@@ -74,9 +76,9 @@ const snippet9 = `{...}?<fail={doSomethingAndReturnAString()}>`;
 const snippet10 = `$ antlr-ng -Dlanguage=C MyGrammar.g4
 error(31):  antlr-ng cannot generate C code as of version 1.0`;
 
-export class OptionsPage extends PageBase {
+export class OptionsPage extends ComponentBase {
     public override componentDidMount(): void {
-        this.highlightCodeBlocks();
+        highlightCodeBlocks();
     }
 
     public override render(): ComponentChild {
@@ -104,13 +106,7 @@ export class OptionsPage extends PageBase {
                     pertain only to the generated parser. Options may be set either within the grammar file using the
                     options syntax (described above) or when invoking <span className="antlrng">antlr-ng</span> on
                     the command line, using the <code>-D</code> option
-                    (see the <a
-                        href="#"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            this.navigateToPage(Page.GettingStarted);
-                        }}>Getting Started Page
-                    </a>.) The following
+                    (see the <a href="/getting-started">Getting Started Page</a>.) The following
                     examples demonstrate both mechanisms; note that <code>-D</code> overrides options within the
                     grammar.
                 </div>
@@ -184,12 +180,7 @@ export class OptionsPage extends PageBase {
 
                 <div>
                     The tool support <code>caseInsensitive</code> lexer rule option that is described in <a
-                        href="#"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            this.navigateToPage(Page.LexerRules);
-                        }}>Lexer Rules Page
-                    </a>.</div>
+                        href="/lexer-rules">Lexer Rules Page</a>.</div>
 
                 <h2>Rule Element Options</h2>
 
