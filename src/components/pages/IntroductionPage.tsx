@@ -7,10 +7,14 @@ import logo from "../../assets/images/logo4.svg";
 
 import { type ComponentChild } from "preact";
 
-import { ComponentBase } from "../ui/Component/ComponentBase";
+import { ComponentBase, type IComponentProperties } from "../ui/Component/ComponentBase";
 import { Container, ContentAlignment, Orientation } from "../ui/Container/Container.js";
 
-export class IntroductionPage extends ComponentBase {
+export interface IIntroductionPageProperties extends IComponentProperties {
+    path: string;
+}
+
+export class IntroductionPage extends ComponentBase<IIntroductionPageProperties> {
     public static title = "antlr-ng Introduction";
 
     public override render(): ComponentChild {
@@ -38,9 +42,10 @@ export class IntroductionPage extends ComponentBase {
                         projects.
                     </li>
                     <li>
-                        <span className="bold">Multi-language Support</span>: <span className="antlrng">antlr-ng</span>
-                        can generate parser and lexer classes for multiple target languages, including
-                        TypeScript/JavaScript, Java, C++, C#, Go, Python3, Dart, Swift, and PHP.
+                        <span className="bold">Multi-language Support</span>
+                        : <span className="antlrng">antlr-ng</span> can generate parser and lexer classes for
+                        multiple target languages, including TypeScript/JavaScript, Java, C++, C#, Go, Python3, Dart,
+                        Swift, and PHP.
                     </li>
                     <li>
                         <span className="bold">Dynamic Configuration</span>: one of the planned features is to allow to
@@ -52,11 +57,7 @@ export class IntroductionPage extends ComponentBase {
                 <div className="note">
                     <b>Note:</b> This documentation is a work in progress and will be updated as the project
                     evolves. The individual pages are rendered from markdown files, which have been copied from the
-                    ANTLR4 documentation and adapted where necessary. The content may not yet fully reflect the
-                    capabilities of <span className="antlrng">antlr-ng</span>.<br /><br />
-
-                    Pages which contain Java code snippets have not been adapted yet and may not work as
-                    expected.
+                    ANTLR4 documentation and adapted for <span className="antlrng">antlr-ng</span>.
                 </div>
 
                 <h2>Usage and Integration</h2>

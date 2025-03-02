@@ -8,7 +8,7 @@
 import { type ComponentChild } from "preact";
 
 import { highlightCodeBlocks } from "../../dom-helpers";
-import { ComponentBase } from "../ui/Component/ComponentBase";
+import { ComponentBase, type IComponentProperties } from "../ui/Component/ComponentBase";
 import { Container, Orientation } from "../ui/Container/Container";
 
 const helpOutput = `> antlr-ng -h
@@ -76,7 +76,11 @@ const codeGenerationCode = `
     };
 `;
 
-export class GettingStartedPage extends ComponentBase {
+export interface IGettingStartedPageProperties extends IComponentProperties {
+    path: string;
+}
+
+export class GettingStartedPage extends ComponentBase<IGettingStartedPageProperties> {
     public override componentDidMount(): void {
         highlightCodeBlocks();
     }
@@ -105,8 +109,9 @@ export class GettingStartedPage extends ComponentBase {
                 </div>
 
                 <div>
-                    If you don't have NPM installed, you can download it
-                    from <a href="https://www.nodejs.org" target="_blank">https://www.nodejs.org</a>.<br /><br />
+                    If you don't have NPM installed, you can download Node.js
+                    from <a href="https://www.nodejs.org" target="_blank">https://www.nodejs.org</a> which includes
+                    NPM. This is all you need to run the tool.<br /><br />
                     The installation command puts the package in the global NPM cache and creates a link to it in a
                     folder which is in your system PATH. Hence you can directly execute it:</div>
 
@@ -125,8 +130,8 @@ export class GettingStartedPage extends ComponentBase {
                     <code>-v</code> at all).
                 </div><br />
                 <div className="note">
-                    <b>Attention:</b> To avoid confusing optional values and grammar names (arguments) do not specify
-                    parameters directly before the grammar names. For example `-l` can optionally take a boolean.
+                    <b>Attention:</b> To avoid problems, don't specify options with optional boolean values
+                    directly before the grammar names. For example `-l` can optionally take a boolean.
                     Omitting that like in `-l MyGrammar.g4` makes the tool think that `MyGrammar.g4` is the boolean
                     value for the `-l` option. So either sort the parameters in a way that keeps those with a value
                     (like the output path) directly before the grammar file names, or use `--` to separate

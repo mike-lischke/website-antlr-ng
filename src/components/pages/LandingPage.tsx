@@ -27,11 +27,11 @@ const sectionContent = [{
 },
 {
     heading: "Made for the Future",
-    text: "As the name suggests, antlr-ng is the next generation of ANTLR, following modern development " +
-        "principles, and allowing to modernize ANTLR's feature set, The tool is written in TypeScript, " +
-        "which runs in browsers and terminals (using Node.js or similar).\n\nIt's a drop-in replacement for " +
-        "the old ANTLR4 Java jar and can be easily integrated into your project workflow to generate your " +
-        "recognizers.",
+    text: "As the name suggests, <span class=\"antlrng\">antlr-ng</span> is the next generation of ANTLR, following " +
+        "modern development principles, and allowing to modernize ANTLR's feature set, The tool is " +
+        "written in TypeScript, which runs in browsers and terminals (using Node.js or similar).\n\nIt's a " +
+        "drop-in replacement for the old ANTLR4 Java jar and can be easily integrated into your project " +
+        "workflow to generate your recognizers.",
     orientation: Orientation.RightToLeft,
     image: rocket,
 },

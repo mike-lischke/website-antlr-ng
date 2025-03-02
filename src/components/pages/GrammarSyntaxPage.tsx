@@ -10,9 +10,13 @@ import "./css/diagram-light.css";
 import { type ComponentChild } from "preact";
 
 import { Button } from "../ui/Button/Button.js";
-import { ComponentBase, type IComponentState } from "../ui/Component/ComponentBase";
+import { ComponentBase, type IComponentProperties, type IComponentState } from "../ui/Component/ComponentBase";
 import { Container, ContentAlignment, Orientation } from "../ui/Container/Container.js";
 import { LoadingIndicator } from "../ui/LoadingIndicator/LoadingIndicator";
+
+export interface IGrammarSyntaxPageProperties extends IComponentProperties {
+    path: string;
+}
 
 interface IGrammarSyntaxPageState extends IComponentState {
     parserGrammarSyntax?: ComponentChild;
@@ -21,8 +25,8 @@ interface IGrammarSyntaxPageState extends IComponentState {
     currentPageContent?: ComponentChild;
 }
 
-export class GrammarSyntaxPage extends ComponentBase<{}, IGrammarSyntaxPageState> {
-    public constructor(props: {}) {
+export class GrammarSyntaxPage extends ComponentBase<IGrammarSyntaxPageProperties, IGrammarSyntaxPageState> {
+    public constructor(props: IGrammarSyntaxPageProperties) {
         super(props);
 
         this.state = {

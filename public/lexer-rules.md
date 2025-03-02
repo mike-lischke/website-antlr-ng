@@ -2,6 +2,8 @@
 
 A lexer grammar is composed of lexer rules, optionally broken into multiple modes. Lexical modes allow us to split a single lexer grammar into multiple sublexers. The lexer can only return tokens matched by rules from the current mode.
 
+## Lexer Rule Structure
+
 Lexer rules specify token definitions and more or less follow the syntax of parser rules except that lexer rules cannot have arguments, return values, or local variables. Lexer rule names must begin with an uppercase letter, which distinguishes them from parser rule names:
 
 ```antlr
@@ -9,7 +11,13 @@ Lexer rules specify token definitions and more or less follow the syntax of pars
 TokenName : alternative1 | ... | alternativeN ;
 ```
 
-You can also define rules that are not tokens but rather aid in the recognition of tokens. These fragment rules do not result in tokens visible to the parser:
+Lexer rules generate a single numeric value known as token, when they match. This value is sent to the parser when it needs the next token to continue parsing input. Lexers (aka tokenizers or scanners) convert a string into individual elements (lexemes), which are also interesting for other tasks like syntax highlighting. 
+
+<div class="note">
+<b>Note:</b> Always the rule that matches the longest part is used to return a token. If more than one rule matches the same amount of input, the first one in the grammar "wins".
+</div>
+
+Not all lexer rules return a token, however. You can augment a rule with the `fragment` keyword which marks them as lexer internal:
 
 ```antlr
 fragment
@@ -23,9 +31,15 @@ INT : DIGIT+ ; // references the DIGIT helper rule
 fragment DIGIT : [0-9] ; // not a token by itself
 ```
 
+Fragment lexer rules cannot be used in parsers.
+
+### Keywords versus Identifiers
+
+A very common problem is that a language has identifiers as well as keywords. Keywords are special identifiers, but from a lexer standpoint both match the same input. This is why it is very important how to specify keywords. They must be defined before any "catch all" identifier rule or your keywords will never be recognized. You can generalize and say: whenever you have a rule which is a special case of a more general rule, place it before that general form in the grammar, to make it work.
+
 ## Lexical Modes
 
-Modes allow you to group lexical rules by context, such as inside and outside of XML tags. It’s like having multiple sublexers, one for each context. The lexer can only return tokens matched by entering a rule in the current mode. Lexers start out in the so-called default mode. All rules are considered to be within the default mode unless you specify a mode command. Modes are not allowed within combined grammars, just lexer grammars. (See grammar `XMLLexer` from [Tokenizing XML](http://pragprog.com/book/tpantlr2/the-definitive-antlr-4-reference).)
+Modes allow you to group lexical rules by context, such as inside and outside of XML tags. It’s like having multiple sublexers, one for each context. The lexer can only return tokens matched by entering a rule in the current mode. Lexers start out in the so-called default mode. All rules are considered to be within the default mode unless you specify a mode command. Modes are not allowed within combined grammars, just lexer grammars. See the description of grammar types in the [Grammars section](/documentation/grammars).
 
 ```antlr
 rules in default mode
@@ -40,124 +54,41 @@ rules in MODEN
 
 ## Lexer Rule Elements
 
-Lexer rules allow two constructs that are unavailable to parser rules: the .. range operator and the character set notation enclosed in square brackets, [characters]. Don’t confuse character sets with arguments to parser rules. [characters] only means character set in a lexer. Here’s a summary of all lexer rule elements:
+Lexer rules are more complex than parser rules. They allow more fine grained control over the matching process, while disallowing most of the target specific parts like local variables, parameters or return values, which parser rules support. Lexer rules are not transformed to functions/methods when generating the target files, but instead are executed in a simple state machine, but still use the same prediction engine like a parser does. Here are the supported lexer rule elements:
 
-<table>
-<tr>
-<th>Syntax</th><th>Description</th>
-</tr>
-<tr>
-<td>T</td><td>
-Match token T at the current input position. Tokens always begin with a capital letter.</td>
-</tr>
+- A lexer rule reference, e.g. `Value: A B C;`. Remember that lexer rule names have to start with a capital letter.
+- String literals, e.g. `'array'`, often used to define keywords.
+- Character ranges, e.g. `'a'..'z'`.
+- A wild card, the dot `.`, see the [Wildcard section](/documentation/grammars/wildcard) for more details.
+- Action code and predicates, e.g. `{this.x = 1;}` or `{this.version > 1}?`, which fulfil the same task like in parser rule, namely to simply execute target code (actions) or to execute target code and return a boolean value (predicates). You should avoid using target code, however, as it makes your lexer much slower and your grammar target language dependent.
+- A character set, e.g. `[abc]`, very similar like in regular expressions.
+- A tilde to denote a do-not-match, e.g. `~[abc]` to define a match of any character, except a, b or c. You can use a tilde also for lexer rule references, like `~Number˙ to match everything but a number.
 
-<tr>
-<td>'literal'</td><td>
-Match that character or sequence of characters. E.g., 'while' or '='.</td>
-</tr>
-
-<tr>
-<td>[char set]</td>
-<td>
-Match one of the characters specified in the character set. Interpret <tt>x-y</tt> as the set of characters between range <tt>x</tt> and <tt>y</tt>, inclusively. The following escaped characters are interpreted as single special characters: <tt>\n</tt>, <tt>\r</tt>, <tt>\b</tt>, <tt>\t</tt>, <tt>\f</tt>, <tt>\uXXXX</tt>, and <tt>\u{XXXXXX}</tt>. To get <tt>]</tt> or <tt>\</tt> you must escape them with <tt>\</tt>. To get <tt>-</tt> you must escape it with <tt>\</tt> too, except for the case when <tt>-</tt> is the first or last character in the set.
-
-<p>You can also include all characters matching Unicode properties (general category, boolean, or enumerated including scripts and blocks) with <tt>\p{PropertyName}</tt> or <tt>\p{EnumProperty=Value}</tt>. (You can invert the test with <tt>\P{PropertyName}</tt> or <tt>\P{EnumProperty=Value}</tt>).</p>
-
-<p>For a list of valid Unicode property names, see <a href="http://unicode.org/reports/tr44/#Properties">Unicode Standard Annex #44</a>. (ANTLR also supports <a href="http://unicode.org/reports/tr44/#General_Category_Values">short and long Unicode general category names and values</a> like <tt>\p{Lu}</tt>, <tt>\p{Z}</tt>, <tt>\p{Symbol}</tt>, <tt>\p{Blk=Latin_1_Sup}</tt>, and <tt>\p{Block=Latin_1_Supplement}</tt>.)</p>
-
-<p>As a shortcut for <tt>\p{Block=Latin_1_Supplement}</tt>, you can refer to blocks using <a href="http://www.unicode.org/Public/UCD/latest/ucd/Blocks.txt">Unicode block names</a> prefixed with <tt>In</tt> and with spaces changed to <tt>_</tt>. For example: <tt>\p{InLatin_1_Supplement}</tt>, <tt>\p{InYijing_Hexagram_Symbols}</tt>, and <tt>\p{InAncient_Greek_Numbers}</tt>.</p>
-
-<p>A few extra properties are supported:</p>
-<ul>
-<li><tt>\p{Extended_Pictographic}</tt> (see <a href="http://unicode.org/reports/tr35/">UTS #35</a>)</li>
-<li><tt>\p{EmojiPresentation=EmojiDefault}</tt> (code points which have colorful emoji-style presentation by default but which can also be displayed text-style)</li>
-<li><tt>\p{EmojiPresentation=TextDefault}</tt> (code points which have black-and-white text-style presentation by default but which can also be displayed emoji-style)</li>
-<li><tt>\p{EmojiPresentation=Text}</tt> (code points which have only black-and-white text-style and lack a colorful emoji-style presentation)</li>
-</ul>
-
-<p>Property names are <b>case-insensitive</b>, and <tt>_</tt> and <tt>-</tt> are treated identically</p>
-
-<p>Here are a few examples:</p>
+Parser rules operates on token values returned from a lexer, while lexer rules use characters (more precisely: code points) to match input. They frequently need to specify character sets (a collection of code points), very much like regular expressions, where character sets are denoted by a pair of square brackets. Don’t confuse character sets with arguments to parser rules. There's an alternative to lexer charsets: using single character code points separated by the alt char (`|`), for example
 
 ```antlr
-WS : [ \n\u000D] -> skip ; // same as [ \n\r]
-
-UNICODE_WS : [\p{White_Space}] -> skip; // match all Unicode whitespace
-
-ID : [a-zA-Z] [a-zA-Z0-9]* ; // match usual identifier spec
-
-UNICODE_ID : [\p{Alpha}\p{General_Category=Other_Letter}] [\p{Alnum}\p{General_Category=Other_Letter}]* ; // match full Unicode alphabetic ids
-
-EMOJI : [\u{1F4A9}\u{1F926}] ; // note Unicode code points > U+FFFF
-
-DASHBRACK : [\-\]]+ ; // match - or ] one or more times
-
-DASH : [---] ; // match a single -, i.e., "any character" between - and - (note first and last - not escaped)
+OptionValue: 'a' | 'b' | 'c';
 ```
-</td>
-</tr>
 
-<tr>
-<td>'x'..'y'</td><td>
-Match any single character between range x and y, inclusively. E.g., 'a'..'z'. 'a'..'z' is identical to [a-z].</td>
-</tr>
-
-<tr>
-<td>T</td><td>
-Invoke lexer rule T; recursion is allowed in general, but not left recursion. T can be a regular token or fragment rule.
+which is however much more verbose than the character set equivalent:
 
 ```antlr
-ID : LETTER (LETTER|'0'..'9')* ;
-
-fragment
-LETTER : [a-zA-Z\u0080-\u00FF_] ;
-```
-</td>
-</tr>
-
-<tr>
-<td>.</td><td>
-The dot is a single-character wildcard that matches any single character. Example:
-```antlr
-ESC : '\\' . ; // match any escaped \x character
-```
-</td>
-</tr>
-
-<tr>
-<td>{«action»}</td><td>
-Lexer actions can appear anywhere as of 4.2, not just at the end of the outermost alternative. The lexer executes the actions at the appropriate input position, according to the placement of the action within the rule. To execute a single action for a rule that has multiple alternatives, you can enclose the alts in parentheses and put the action afterwards:
-
-```antlr
-END : ('endif'|'end') {System.out.println("found an end");} ;
+OptionValue: [abc];
 ```
 
-<p>The action conforms to the syntax of the target language. ANTLR copies the action’s contents into the generated code verbatim; there is no translation of expressions like $x.y as there is in parser actions.</p>
-<p>
-Only actions within the outermost token rule are executed. In other words, if STRING calls ESC_CHAR and ESC_CHAR has an action, that action is not executed when the lexer starts matching in STRING.</p></td>
-</tr>
+There's no need to quote the individual characters between brackets.
 
-<tr>
-<td>{«p»}?</td><td>
-Evaluate semantic predicate «p». If «p» evaluates to false at runtime, the surrounding rule becomes “invisible” (nonviable). Expression «p» conforms to the target language syntax. While semantic predicates can appear anywhere within a lexer rule, it is most efficient to have them at the end of the rule. The one caveat is that semantic predicates must precede lexer actions. See Predicates in Lexer Rules.</td>
-</tr>
+## Unicode
 
-<tr>
-<td>~x</td><td>
-Match any single character not in the set described by x. Set x can be a single character literal, a range, or a subrule set like ~('x'|'y'|'z') or ~[xyz]. Here is a rule that uses ~ to match any character other than characters using ~[\r\n]*:
+In addition to writing simple letters (quoted or in square brackets), you can use ranges like `[a-zA-Z0-9]` and Unicode escapes. Read the [Unicode section](/documentation/grammars/unicode) for an in-depth description how to match the full Unciode range.
 
-```antlr
-COMMENT : '#' ~[\r\n]* '\r'? '\n' -> skip ;
-```
-</td>
-</tr>
-</table>
+## Cardinality
 
-Just as with parser rules, lexer rules allow subrules in parentheses and EBNF operators: `?`, `*`, `+`. The `COMMENT` rule illustrates the `*` and `?` operators. A common use of `+` is `[0-9]+` to match integers. Lexer subrules can also use the nongreedy `?` suffix on those EBNF operators.
+Just as with parser rules, lexer rules allow subrules in parentheses and EBNF operators: `?`, `*`, `+`, which describe the number of occurences (their cardinality). A common use of `+` is `[0-9]+` to match integers. Lexer subrules can also use the nongreedy `?` suffix on those EBNF operators.
 
 ## Recursive Lexer Rules
 
-ANTLR lexer rules can be recursive, unlike most lexical grammar tools. This comes in really handy when you want to match nested tokens like nested action blocks: `{...{...}...}`.
+<span class="antlr-ng">antlr-ng</span> lexer rules can be recursive, unlike most lexical grammar tools. This comes in really handy when you want to match nested tokens like nested action blocks: `{...{...}...}`.
 
 ```antlr
 lexer grammar Recur;
@@ -167,9 +98,9 @@ ACTION : '{' ( ACTION | ~[{}] )* '}' ;
 WS : [ \r\t\n]+ -> skip ;
 ```
 
-## Redundant String Literals
+## Conflicting String Literals
 
-Be careful that you don’t specify the same string literal on the right-hand side of multiple lexer rules. Such literals are ambiguous and could match multiple token types. ANTLR makes this literal unavailable to the parser. The same is true for rules across modes. For example, the following lexer grammar defines two tokens with the same character sequence:
+Be careful that you don’t specify the same string literal on the right-hand side of multiple lexer rules (see also the keywords vs identifiers section above, which is related). Such literals are ambiguous and could theoretically match multiple token types (but in reality the first token will always be used, see the note at the top of the file). The same is true for rules across modes. For example, the following lexer grammar defines two tokens with the same character sequence:
 
 ```antlr
 lexer grammar L;
@@ -192,26 +123,24 @@ a : '&' // results in a tool error: no such token
 Here’s a build and test sequence:
 
 ```bash
-$ antlr4 L.g4 # yields L.tokens file needed by tokenVocab option in P.g4
-$ antlr4 P.g4
+$ antlr-ng L.g4 # yields L.tokens file needed by tokenVocab option in P.g4
+$ antlr-ng P.g4
 error(126): P.g4:3:4: cannot create implicit token for string literal '&' in non-combined grammar
 ```
 
 ## Lexer Rule Actions
 
-An ANTLR lexer creates a Token object after matching a lexical rule. Each request for a token starts in `Lexer.nextToken`, which calls `emit` once it has identified a token. `emit` collects information from the current state of the lexer to build the token. It accesses fields `_type`, `_text`, `_channel`, `_tokenStartCharIndex`, `_tokenStartLine`, and `_tokenStartCharPositionInLine`. You can set the state of these with the various setter methods such as `setType`. For example, the following rule turns `enum` into an identifier if `enumIsKeyword` is false.
+An <span class="antlr-ng">antlr-ng</span> lexer creates a token object after matching a lexical rule. Each request for a token starts in `Lexer.nextToken()`, which calls `emit` once it has identified a token. `emit` collects information from the current state of the lexer to build the token. It accesses fields `type`, `text`, `channel`, `tokenStartCharIndex`, `tokenStartLine`, and `column`. You can set the state of these with the various setter methods such as `setType`. For example, the following rule turns `enum` into an identifier if `enumIsKeyword` is false.
 
 ```antlr
 ENUM : 'enum' {if (!enumIsKeyword) setType(Identifier);} ;
 ```
 
-ANTLR does no special `$x` attribute translations in lexer actions (unlike v3).
-
 There can be at most a single action for a lexical rule, regardless of how many alternatives there are in that rule.
 
 ## Lexer Commands
 
-To avoid tying a grammar to a particular target language, ANTLR supports lexer commands. Unlike arbitrary embedded actions, these commands follow specific syntax and are limited to a few common commands. Lexer commands appear at the end of the outermost alternative of a lexer rule definition. Like arbitrary actions, there can only be one per token rule. A lexer command consists of the `->` operator followed by one or more command names that can optionally take parameters:
+To avoid tying a grammar to a particular target language, <span class="antlr-ng">antlr-ng</span> supports lexer commands. Unlike arbitrary embedded actions, these commands follow specific syntax and are limited to a few common commands. Lexer commands appear at the end of the outermost alternative of a lexer rule definition. Like arbitrary actions, there can only be one per token rule. A lexer command consists of the `->` operator followed by one or more command names that can optionally take parameters:
 
 ```antlr
 TokenName : «alternative» -> command-name
@@ -220,17 +149,17 @@ TokenName : «alternative» -> command-name («identifier or integer»)
 
 An alternative can have more than one command separated by commas. Here are the valid command names:
 
-* skip
-* more
-* popMode
-* mode( x )
-* pushMode( x )
-* type( x )
-* channel( x )
+* `skip`
+* `more`
+* `popMode`
+* `mode(x)`
+* `pushMode(x)`
+* `type(x)`
+* `channel(x)`
 
-See the book source code for usage, some examples of which are shown here:
+Here are some examples:
 
-### skip
+### Command `skip`
 
 A 'skip' command tells the lexer to get another token and throw out the current text.
 
@@ -241,7 +170,7 @@ NEWLINE:'\r'? '\n' ; // return newlines to parser (is end-statement signal)
 WS : [ \t]+ -> skip ; // toss out whitespace
 ```
 
-### mode(), pushMode(), popMode, and more
+### Commands `mode()`, `pushMode()`, `popMode`, and `more`
 
 The mode commands alter the mode stack and hence the mode of the lexer. The 'more' command forces the lexer to get another token but without throwing out the current text. The token type will be that of the "final" rule matched (i.e., the one without a more or skip command).
 
@@ -273,7 +202,9 @@ TEXT : . -> more ; // collect more text for string
 
 Popping the bottom layer of a mode stack will result in an exception. Switching modes with `mode` changes the current stack top.  More than one `more` is the same as just one and the position does not matter.
 
-### type()
+### Command `type()`
+
+The `type()` command changes the token type that is returned from the lexer that contains it.
 
 ```antlr
 lexer grammar SetType;
@@ -285,7 +216,7 @@ WS     : [ \r\t\n]+    -> skip ;
 
 For multiple 'type()' commands, only the rightmost has an effect.
 
-### channel()
+### Command `channel()`
 
 ```antlr
 BLOCK_COMMENT

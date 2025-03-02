@@ -11,6 +11,7 @@ import "./assets/css/style.css";
 import "./assets/css/theme.css";
 
 import { Component, render, type ComponentChild } from "preact";
+import { ErrorBoundary, LocationProvider, Route, Router } from "preact-iso";
 
 import { DevTools } from "./components/pages/DevTools.js";
 import { Documentation } from "./components/pages/Documentation.js";
@@ -18,7 +19,6 @@ import { Downloads } from "./components/pages/Download.js";
 import { LandingPage } from "./components/pages/LandingPage.js";
 import { Playground } from "./components/pages/Playground.js";
 import { MainMenu } from "./components/ui/MainMenu/MainMenu.js";
-import Router, { Route } from "preact-router";
 
 export const enum PageType {
     Home,
@@ -33,7 +33,6 @@ interface IAppState {
 }
 
 export class App extends Component<{}, IAppState> {
-
     public constructor() {
         super();
 
@@ -50,16 +49,19 @@ export class App extends Component<{}, IAppState> {
         />;
 
         return (
-            <>
-                {menu}
-                <Router>
-                    <Route path="/" component={LandingPage} />
-                    <Route path="/documentation/:id*" component={Documentation} />
-                    <Route path="/downloads" component={Downloads} />
-                    <Route path="/devtools" component={DevTools} />
-                    <Route path="/playground" component={Playground} />
-                </Router>
-            </>
+            <LocationProvider>
+                <ErrorBoundary>
+                    {menu}
+                    <Router>
+                        <Route path="/" component={LandingPage} />
+                        <Route path="/documentation/" component={Documentation} />
+                        <Route path="/documentation/*" component={Documentation} />
+                        <Route path="/downloads" component={Downloads} />
+                        <Route path="/devtools" component={DevTools} />
+                        <Route path="/playground" component={Playground} />
+                    </Router >
+                </ErrorBoundary>
+            </LocationProvider>
         );
     }
 }

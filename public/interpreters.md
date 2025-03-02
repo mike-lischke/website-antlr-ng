@@ -1,93 +1,43 @@
 # Parser and Lexer Interpreters
 
-*Since ANTLR 4.2*
+For small parsing tasks it is sometimes convenient to use <span class="antlr-ng">antlr-ng</span> in interpreted mode, rather than generating a parser in a particular target, compiling it and running it as part of your application. Interpreters are particularly useful for REPL applications (see also [Other Useful Tools](/documentation/repl).
 
-For small parsing tasks it is sometimes convenient to use ANTLR in interpreted mode, rather than generating a parser in a particular target, compiling it and running it as part of your application. Here's some sample code that creates lexer and parser Grammar objects and then creates interpreters. Once we have a ParserInterpreter, we can use it to parse starting in any rule we like, given a rule index (which the grammar + the parser can provide).
+Interpreters are part of the runtimes and hence can be used even in your favourite programming language. However, grammar classes are not, so a different approach is required there. Both are explained below.
+
+In TypeScript you can fully use lexer and parser `Grammar` objects and then create interpreters. Once we have a `ParserInterpreter`, we can use it to parse starting in any rule we like, given a rule index (which the grammar + the parser can provide).
 
 ## Action Code
 
 Since interpreters don't use generated parsers + lexers they cannot execute any action code (including predicates). That means the interpreter runs as if there were no predicates at all. If your grammar requires action code in order to parse correctly you will not be able to test it using this approach.
 
-## Java Target Interpreter Setup
+## TypeScript Interpreter Setup
 
-```java
-LexerGrammar lg = new LexerGrammar(
+```typescript
+import { LexerGrammar, Grammar } from "antlr-ng";
+import { CharStream, CommonTokenStream } from "antlr4ng";
+
+const lg = new LexerGrammar(
     "lexer grammar L;\n" +
     "A : 'a' ;\n" +
     "B : 'b' ;\n" +
     "C : 'c' ;\n");
-Grammar g = new Grammar(
+
+const g = new Grammar(
     "parser grammar T;\n" +
     "s : (A|B)* C ;\n",
-    lg);   
-LexerInterpreter lexEngine =
-    lg.createLexerInterpreter(new ANTLRInputStream(input));
-CommonTokenStream tokens = new CommonTokenStream(lexEngine);
-ParserInterpreter parser = g.createParserInterpreter(tokens);
-ParseTree t = parser.parse(g.rules.get(startRule).index);
+    lg);
+
+const lexEngine = lg.createLexerInterpreter(CharStream.fromString(input));
+const tokens = new CommonTokenStream(lexEngine);
+const parser = g.createParserInterpreter(tokens);
+const t = parser.parse(g.rules.get(startRule).index);
 ```
 
-You can also load combined grammars from a file:
+## Non-TypeScript Target Interpreter Setup
 
-```java
-public static ParseTree parse(String fileName,
-                              String combinedGrammarFileName,
-                              String startRule)
-    throws IOException
-{
-    final Grammar g = Grammar.load(combinedGrammarFileName);
-    LexerInterpreter lexEngine = g.createLexerInterpreter(CharStreams.fromPath(Paths.get(fileName)));
-    CommonTokenStream tokens = new CommonTokenStream(lexEngine);
-    ParserInterpreter parser = g.createParserInterpreter(tokens);
-    ParseTree t = parser.parse(g.getRule(startRule).index);
-    System.out.println("parse tree: "+t.toStringTree(parser));
-    return t;
-}
-```
+The <span class="antlr-ng">antlr-ng</span> runtimes do not contain any grammar parsing classes. Hence we cannot use `LexerGrammar` and `Grammar` to parse grammars for the interpreter. Instead we directly instantiate `LexerInterpreter` and `ParserInterpreter` objects. They require some data (namely symbol information and the ATNs) which only the <span class="antlr-ng">antlr-ng</span> tool can give us. However, on each generation run <span class="antlr-ng">antlr-ng</span> not only produces your parser + lexer files but also interpreter data files (*.interp) which contain all you need to feed the interpreters.
 
-Then:
-
-```java
-ParseTree t = parse("T.om",
-                    MantraGrammar,
-                    "compilationUnit");
-```
- 
-To load separate lexer/parser grammars, do this:
-
-```java
-public static ParseTree parse(String fileNameToParse,
-                              String lexerGrammarFileName,
-                              String parserGrammarFileName,
-                              String startRule)
-    throws IOException
-{
-    final LexerGrammar lg = (LexerGrammar) Grammar.load(lexerGrammarFileName);
-    final Grammar pg = Grammar.load(parserGrammarFileName, lg);
-    CharStream input = CharStreams.fromPath(Paths.get(fileNameToParse));
-    LexerInterpreter lexEngine = lg.createLexerInterpreter(input);
-    CommonTokenStream tokens = new CommonTokenStream(lexEngine);
-    ParserInterpreter parser = pg.createParserInterpreter(tokens);
-    ParseTree t = parser.parse(pg.getRule(startRule).index);
-    System.out.println("parse tree: " + t.toStringTree(parser));
-    return t;
-}
-```
-
-Then:
-
-```java
-ParseTree t = parse(fileName, XMLLexerGrammar, XMLParserGrammar, "document");
-```
-
-This is also how we will integrate instantaneous parsing into ANTLRWorks2 and development environment plug-ins.
-
-See [TestParserInterpreter.java](../tool-testsuite/test/org/antlr/v4/test/tool/TestParserInterpreter.java).
-
-## Non-Java Target Interpreter Setup
-The ANTLR4 runtimes do not contain any grammar parsing classes (they are in the ANTLR4 tool  jar). Hence we cannot use `LexerGrammar` and `Grammar` to parse grammars for the interpreter. Instead we directly instantiate `LexerInterpreter` and `ParserInterpreter` objects. They require some data (namely symbol information and the ATNs) which only the ANTLR4 tool can give us. However, on each generation run ANTLR not only produces your parser + lexer files but also interpreter data files (*.interp) which contain all you need to feed the interpreters.
-
-A support class (`InterpreterDataReader`) is used to load the data for your convenience, which makes this very easy to use. Btw. even the Java target go this route instead of using the non-runtime classes `Grammar` and `LexerGrammar`. Sometimes it might not be feasible to use the tool jar for whatever reason.
+A support class (`InterpreterDataReader`) is used to load the data for your convenience, which makes this very easy to use. Btw. even the TypeScript target can go this route instead of using the non-runtime classes `Grammar` and `LexerGrammar`. Sometimes it might not be feasible to use the `antlr-ng` package for whatever reason.
 
 Here's how the setup looks like (C++ example):
 

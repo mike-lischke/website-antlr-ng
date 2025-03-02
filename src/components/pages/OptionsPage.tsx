@@ -6,7 +6,7 @@
 import type { ComponentChild } from "preact";
 
 import { highlightCodeBlocks } from "../../dom-helpers";
-import { ComponentBase } from "../ui/Component/ComponentBase";
+import { ComponentBase, type IComponentProperties } from "../ui/Component/ComponentBase";
 import { Container, Orientation } from "../ui/Container/Container";
 
 const snippet1 = "options { name1 = value1; ... nameN = valueN; };";
@@ -14,11 +14,10 @@ const snippet1 = "options { name1 = value1; ... nameN = valueN; };";
 const snippet2 = `grammar Hi;
 a : 'hi' ;
 
-// Run generation: antlr-ng -DsuperClassName=XX Hi.g4
+// Run generation: antlr-ng -DsuperClass=XX Hi.g4
 // which produces this:
 class HiParser extends XX {`;
 
-const snippet3 = `{...}`;
 const snippet4 = `lexer grammar SomeLexer;
 ID : [a-z]+;
 
@@ -76,7 +75,11 @@ const snippet9 = `{...}?<fail={doSomethingAndReturnAString()}>`;
 const snippet10 = `$ antlr-ng -Dlanguage=C MyGrammar.g4
 error(31):  antlr-ng cannot generate C code as of version 1.0`;
 
-export class OptionsPage extends ComponentBase {
+export interface IOptionsPageProperties extends IComponentProperties {
+    path: string;
+}
+
+export class OptionsPage extends ComponentBase<IOptionsPageProperties> {
     public override componentDidMount(): void {
         highlightCodeBlocks();
     }
@@ -89,15 +92,17 @@ export class OptionsPage extends ComponentBase {
                 orientation={Orientation.TopDown}>
                 <h1>Options</h1>
 
-                <div>There are a number of options that you can specify at the grammar and rule element level.
+                <div>There are a number of options that you can specify at the grammar and rule element level
                     (there are currently no rule options.) These change
                     how <span className="antlrng">antlr-ng</span> generates code from your grammar. The general syntax
                     is:</div>
 
                 <pre><code className="language-antlr">{snippet1}</code></pre>
 
-                <div>where a value can be an identifier, a qualified identifier (for example, a.b.c), a string, a
-                    multi-line string in curly braces <code>{snippet3}</code>, and an integer.</div>
+                <div>
+                    where a value can be an identifier, a qualified identifier (for example, a.b.c), a string,
+                    and an integer.
+                </div>
 
                 <h2 >Grammar Options</h2>
 
@@ -106,7 +111,7 @@ export class OptionsPage extends ComponentBase {
                     pertain only to the generated parser. Options may be set either within the grammar file using the
                     options syntax (described above) or when invoking <span className="antlrng">antlr-ng</span> on
                     the command line, using the <code>-D</code> option
-                    (see the <a href="/getting-started">Getting Started Page</a>.) The following
+                    (see the <a href="/documentation/getting-started">Getting Started Page</a>.) The following
                     examples demonstrate both mechanisms; note that <code>-D</code> overrides options within the
                     grammar.
                 </div>
@@ -150,7 +155,7 @@ export class OptionsPage extends ComponentBase {
 
                 <div>Specify the super class of parse tree internal nodes. Default is <code>ParserRuleContext</code>.
                     Should derive from ultimately <code>ParserRuleContext</code> at minimum.
-                    You can use <code>contextSuperClassName=RuleContextWithAltNum</code> for convenience. It adds a
+                    You can use <code>contextSuperClass=RuleContextWithAltNum</code> for convenience. It adds a
                     backing field for <code>altNumber</code>, the alt matched for the
                     associated rule node.</div>
 
@@ -180,7 +185,7 @@ export class OptionsPage extends ComponentBase {
 
                 <div>
                     The tool support <code>caseInsensitive</code> lexer rule option that is described in <a
-                        href="/lexer-rules">Lexer Rules Page</a>.</div>
+                        href="/documentation/grammars/lexer-rules">Lexer Rules Page</a>.</div>
 
                 <h2>Rule Element Options</h2>
 

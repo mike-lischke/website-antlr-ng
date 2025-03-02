@@ -6,7 +6,7 @@
 import { Component, type ComponentChild } from "preact";
 
 export interface IScrollToAnchorProperties {
-    url?: string;
+    path?: string;
 }
 
 export class ScrollToAnchor extends Component<IScrollToAnchorProperties> {
@@ -15,7 +15,7 @@ export class ScrollToAnchor extends Component<IScrollToAnchorProperties> {
     }
 
     public override componentDidUpdate(prevProps: IScrollToAnchorProperties) {
-        if (this.props.url !== prevProps.url) {
+        if (this.props.path !== prevProps.path) {
             this.scrollToHash();
         }
     }

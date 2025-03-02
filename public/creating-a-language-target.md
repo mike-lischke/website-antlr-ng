@@ -2,6 +2,10 @@
 
 This document describes how to make ANTLR generate parsers in a new language, *X*.
 
+<div class="note">
+<b>ATTENTION:</b> the way described here to create a new target is only valid for ANTLR4 and will completely change in <span class="antlrng">antlr-ng</span>!
+</div>
+
 ## Overview
 
 Creating a new target involves the following key elements:

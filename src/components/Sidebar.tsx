@@ -5,18 +5,18 @@
 
 import { createRef, type ComponentChild } from "preact";
 
-//import { useLocation } from "preact-iso";
 import type { ColumnDefinition } from "tabulator-tables";
 
 import { ComponentBase, SelectionType, type IComponentProperties } from "./ui/Component/ComponentBase.js";
 import { Container, Orientation } from "./ui/Container/Container.js";
 import { TreeGrid } from "./ui/TreeGrid/TreeGrid.js";
-import { route } from "preact-router";
+import { useLocation } from "preact-iso";
 
 export enum Page {
     Actions,
     Introduction,
     GettingStarted,
+    REPL,
     Grammars,
     Options,
     ParserRules,
@@ -32,6 +32,7 @@ export enum Page {
     TreeMatching,
     CreatingALanguageTarget,
     Building,
+    Testing,
     Resources,
 }
 
@@ -42,9 +43,6 @@ export interface ISection {
 
     /** The path to the page. */
     urlPath: string;
-
-    /** Indicates whether a markdown is to be shown. */
-    file?: string;
 
     children?: ISection[];
 }
@@ -58,25 +56,21 @@ export class SideBar extends ComponentBase<ISideBarProperties> {
     private treeRef = createRef<TreeGrid>();
 
     public override componentDidUpdate(previousProps: Readonly<ISideBarProperties>): void {
-        const { currentPath } = this.props;
+        const { currentPath, sections } = this.props;
 
         if (currentPath !== previousProps.currentPath) {
             const tree = this.treeRef.current;
             if (tree) {
-                const previousSection = previousProps.sections.find((section) => {
-                    return section.urlPath === previousProps.currentPath;
+                const selected = tree.getSelectedRows();
+                selected.forEach((row) => {
+                    tree.deselectRow(row);
                 });
 
-                if (previousSection) {
-                    tree.deselectRow(previousSection.id);
-                }
+                const currentSection = this.sectionFromPath(currentPath, sections);
 
-                const currentSection = this.props.sections.find((section) => {
-                    return section.urlPath === currentPath;
-                });
-
-                if (currentSection) {
-                    tree.selectRow([currentSection.id]);
+                const rows = tree.searchAllRows("id", currentSection?.id ?? Page.Introduction);
+                if (rows.length > 0) {
+                    tree.selectRow([rows[0]]);
                 }
             }
         }
@@ -85,21 +79,15 @@ export class SideBar extends ComponentBase<ISideBarProperties> {
     public render(): ComponentChild {
         const { sections, currentPath } = this.props;
 
-        //const { route } = useLocation();
+        const currentSection = this.sectionFromPath(currentPath, sections);
+        const { route } = useLocation();
 
-        const subPath = currentPath.substring("/documentation".length);
-        const currentSection = sections.find((section) => {
-            return section.urlPath === subPath;
-        });
-
-        const columns: ColumnDefinition[] = [
-            {
-                title: "antlr-ng",
-                field: "title",
-                resizable: false,
-                headerSort: false,
-            },
-        ];
+        const columns: ColumnDefinition[] = [{
+            title: "antlr-ng",
+            field: "title",
+            resizable: false,
+            headerSort: false,
+        }];
 
         const className = this.getEffectiveClassNames(["sidebar"]);
 
@@ -127,5 +115,22 @@ export class SideBar extends ComponentBase<ISideBarProperties> {
                 />
             </Container>
         );
+    }
+
+    private sectionFromPath(path: string, sections: ISection[]): ISection | undefined {
+        for (const section of sections) {
+            if (section.urlPath === path) {
+                return section;
+            }
+
+            if (section.children && section.children.length > 0) {
+                const childSection = this.sectionFromPath(path, section.children);
+                if (childSection) {
+                    return childSection;
+                }
+            }
+        }
+
+        return undefined;
     }
 }

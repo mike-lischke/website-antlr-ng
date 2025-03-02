@@ -29,8 +29,8 @@ export class HomeSection extends Component<IHomeSectionProperties> {
                 crossAlignment={ContentAlignment.Center}
             >
                 <Container orientation={Orientation.TopDown} >
-                    <div className="section-heading" > {heading} </div>
-                    <div className="section-text" > {text} </div>
+                    <div className="section-heading"> {heading} </div>
+                    <div className="section-text"> {text} </div>
                 </Container>
                 {image && <img className="section-image" src={image} />}
             </Container>

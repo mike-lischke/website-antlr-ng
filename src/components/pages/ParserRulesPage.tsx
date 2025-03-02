@@ -11,7 +11,7 @@ import xyz from "../../assets/images/xyz.png";
 import { type ComponentChild } from "preact";
 
 import { highlightCodeBlocks } from "../../dom-helpers";
-import { ComponentBase } from "../ui/Component/ComponentBase";
+import { ComponentBase, type IComponentProperties } from "../ui/Component/ComponentBase";
 import { Container, Orientation } from "../ui/Container/Container";
 
 const snippet1 = `/** Javadoc comment can precede rule */
@@ -31,12 +31,12 @@ const snippet3 = `superClass
 
 const snippet4 = `grammar T;
 stat: 'return' e ';' # Return
-    | 'break' ';' # Break
+    | 'break' ';'    # Break
     ;
 
 e   : e '*' e # Mult
     | e '+' e # Add
-    | INT # Int
+    | INT     # Int
 ;`;
 
 const snippet5 = `export interface AListener extends ParseTreeListener {
@@ -52,9 +52,9 @@ const snippet5 = `export interface AListener extends ParseTreeListener {
     void exitInt(ctx: AParser.IntContext);
 }`;
 
-const snippet6 = `e: e '*' e # BinaryOp
+const snippet6 = `e: e '*' e    # BinaryOp
     | e '+' e # BinaryOp
-    | INT # Int
+    | INT     # Int
 ;`;
 
 const snippet7 = `void enterBinaryOp(ctx: AParser.BinaryOpContext);
@@ -63,9 +63,9 @@ const snippet7 = `void enterBinaryOp(ctx: AParser.BinaryOpContext);
     void exitInt(ctx: AParser.IntContext);
     ...`;
 
-const snippet8 = `e : e '*' e # e
+const snippet8 = `e : e '*' e   # e
     | e '+' e # Stat
-    | INT # Int
+    | INT     # Int
     ;`;
 
 const snippet9 = `$ antlr-ng A.g4
@@ -95,8 +95,8 @@ const snippet14 = `s : field
 }
 ;`;
 
-const snippet15 = `stat: 'return' value=e ';' # Return
-    | 'break' ';' # Break
+const snippet15 = `stat: 'return' value = e ';' # Return
+    | 'break' ';'            # Break
     ;`;
 
 const snippet16 = `export static class ReturnContext extends StatContext {
@@ -104,14 +104,14 @@ const snippet16 = `export static class ReturnContext extends StatContext {
     ...
 }`;
 
-const snippet17 = `array : '{' el+=INT (', ' el+=INT)* '}' ;`;
+const snippet17 = `array : '{' el += INT (', ' el += INT)* '}' ;`;
 
 const snippet18 = `export static class ArrayContext extends ParserRuleContext {
     public el: Token[] = new Array<Token>();
     ...
 }`;
 
-const snippet19 = `elist : exprs+=e (',' exprs+=e)* ;`;
+const snippet19 = `elist : exprs += e (',' exprs += e)* ;`;
 
 const snippet20 = `export static class ElistContext extends ParserRuleContext {
     public exprs: EContext[] = new Array<EContext>();
@@ -148,9 +148,9 @@ const snippet24 = `r: ...
 const snippet25 = `rulename[args] returns [retvals] locals [localvars] : ... ;`;
 
 const snippet26 = `// Return the argument plus the integer value of the INT token
-    add[x: number] returns [int result] : '+=' INT {$result = $x + $INT.int;} ;`;
+add[x: number] returns [int result] : '+=' INT {$result = $x + $INT.int;} ;`;
 
-const snippet27 = `/** Derived from rule "row : field (',' field)* '\r'? '\n' ;" */
+const snippet27 = `/** Derived from rule "row : field (',' field)* '\\r'? '\\n' ;" */
     row[columns: string[]]
     returns [values: Map<string, string>]
     locals [const col=0]
@@ -186,7 +186,7 @@ const snippet29 = `export class CSVParser extends Parser {
     ...
 }`;
 
-const snippet30 = `public final AContext a(x: Map<string, string>, y: number) {
+const snippet30 = `public a(x: Map<string, string>, y: number): AContext {
     const _localctx = new AContext(_ctx, 0, x, y);
     this.enterRule(_localctx, RULE_a);
     ...
@@ -205,7 +205,11 @@ const snippet34 = `[«action»]`;
 
 const snippet35 = `{«action»}?`;
 
-export class ParserRulesPage extends ComponentBase {
+export interface IParserRulesPageProperties extends IComponentProperties {
+    path: string;
+}
+
+export class ParserRulesPage extends ComponentBase<IParserRulesPageProperties> {
     public override componentDidMount(): void {
         highlightCodeBlocks();
     }
@@ -556,17 +560,16 @@ export class ParserRulesPage extends ComponentBase {
                     </thead>
                     <tbody>
                         <tr>
-                            <td>RecognitionException</td>
+                            <td><code>RecognitionException</code></td>
                             <td>
                                 The superclass of all exceptions thrown by an <span className="antlrng">antlr-ng</span>-
-                                generated recognizer. It’s a subclass of RuntimeException to avoid the hassles of
-                                checked exceptions. This exception records where the recognizer (lexer or parser)
+                                generated recognizers. This exception records where the recognizer (lexer or parser)
                                 was in the input, where it was in the ATN (internal graph data structure representing
                                 the grammar), the rule invocation stack, and what kind of problem occurred.
                             </td>
                         </tr>
                         <tr>
-                            <td>NoViableAltException</td>
+                            <td><code>NoViableAltException</code></td>
                             <td>
                                 Indicates that the parser could not decide which of two or more paths to take by looking
                                 at the remaining input. This exception tracks the starting token of the offending input
@@ -574,19 +577,19 @@ export class ParserRulesPage extends ComponentBase {
                             </td>
                         </tr>
                         <tr>
-                            <td>LexerNoViableAltException</td>
+                            <td><code>LexerNoViableAltException</code></td>
                             <td>
-                                The equivalent of NoViableAltException but for lexers only.
+                                The equivalent of <code>NoViableAltException</code> but for lexers only.
                             </td>
                         </tr>
                         <tr>
-                            <td>InputMismatchException</td>
+                            <td><code>InputMismatchException</code></td>
                             <td>
-                                The current input Token does not match what the parser expected.
+                                The current input token does not match what the parser expected.
                             </td>
                         </tr>
                         <tr>
-                            <td>FailedPredicateException</td>
+                            <td><code>FailedPredicateException</code></td>
                             <td>
                                 A semantic predicate that evaluates to false during prediction renders the surrounding
                                 alternative nonviable. Prediction occurs when a rule is predicting which alternative
@@ -602,8 +605,8 @@ export class ParserRulesPage extends ComponentBase {
 
                 <div>There are a number of action-related syntax elements associated with rules to be aware of. Rules
                     can have arguments, return values, and local variables just like functions in a programming
-                    language. (Rules can have actions embedded among the rule elements, as we’ll see in Section 15.4,
-                    Actions and Attributes.) <span className="antlrng">antlr-ng</span> collects all of the variables
+                    language (rules can have actions embedded among the rule
+                    elements) <span className="antlrng">antlr-ng</span> collects all of the variables
                     you define and stores them in the rule context object. These variables are usually called
                     attributes. Here’s the general syntax showing all possible attribute definition locations:
                 </div>
@@ -620,36 +623,12 @@ export class ParserRulesPage extends ComponentBase {
                     some constraints. The <code>[...]</code> string is a comma-separated list of declarations either
                     with prefix or postfix type notation or no-type notation. The elements can have initializer such
                     as <code>[int x = 32, float y]</code> but don&rsquo;t go too crazy as we are parsing this generic
-                    text manually
-                    in <a
-                        href="https://github.com/antlr/antlr4/blob/master/tool/src/org/antlr/v4/parse/ScopeParser.java">
-                        ScopeParser
-                    </a>.
+                    text manually.
                 </div>
 
-                <ul>
-                    <li>
-                        Java, CSharp, C++ use <code>int x</code> notation but C++ must use a slightly altered notation
-                        for array references, <code>int[] x</code>, to fit in the <em>type</em> <em>id</em> syntax
-                        .</li>
-                    <li>
-                        Go and Swift give the type after the variable name, but Swift requires a <code>:</code> in
-                        between. Go <code>i int</code>, Swift <code>i:int</code>.  For Go target, you must either
-                        use <code>int i</code> or <code>i:int</code>
-                        .</li>
-                    <li>
-                        Python and JavaScript don&rsquo;t specify static types so actions are just identifier lists
-                        such as <code>[i,j]</code>.
-                    </li>
-                </ul>
-
-                <div>
-                    Technically any target could use either notation. For examples,
-                    see <a
-                        // eslint-disable-next-line max-len
-                        href="https://github.com/antlr/antlr4/blob/master/tool-testsuite/test/org/antlr/v4/test/tool/TestScopeParsing.java">
-                        TestScopeParsing
-                    </a>.
+                <div class="note">
+                    <b>Attention:</b> target code like that is likely to be phased out, in an attempt to lower the
+                    amount of target language specific code in grammars.
                 </div>
 
                 <div>
@@ -684,30 +663,33 @@ export class ParserRulesPage extends ComponentBase {
 
                 <div>
                     <span className="antlrng">antlr-ng</span> tracks nested <code>[...]</code> within the action
-                    so that <code>String[]</code> columns is parsed properly. It also tracks angle brackets so
+                    so that <code>columns: string[]</code> is parsed properly. It also tracks angle brackets so
                     that commas within generic type parameters do not signify the start of another
-                    attribute. <code>Map&lt;String,String&gt;</code> values is one attribute definition.
+                    attribute. <code>Map&lt;string, string&gt;</code> values is one attribute definition.
                 </div>
 
                 <div>
                     There can be multiple attributes in each action, even for return values. Use a comma to separate
                     attributes within the same action:
                 </div>
-                <pre><code class="language-typescript">a[Map&lt;String,String&gt; x, int y] : ... ;</code></pre>
+                <pre><code class="language-typescript">a[x: Map&lt;string, string&gt;, y: number] : ... ;</code></pre>
 
-                <div>ANTLR interprets that action to define two arguments, x and y:</div>
+                <div>
+                    <span className="antlrng">antlr-ng</span> interprets that action to define two arguments, x and y:
+                </div>
                 <pre><code class="language-typescript">{snippet30}</code></pre>
 
                 <h2>Start Rules and EOF</h2>
 
                 <div>
-                    A start rule is the rule engaged first by the parser; it’s the rule function called by the
+                    A start rule is the rule engaged first by the parser - it’s the rule function called by the
                     language application. For example, a language application that parsed to Java code might
                     call <code>parser.compilationUnit()</code> for a <code>JavaParser</code> object
                     called <code>parser</code>. Any rule in the grammar can act as a start rule.
                 </div>
 
-                <div>Start rules don’t necessarily consume all of the input. They consume only as much input as
+                <div>
+                    Start rules don’t necessarily consume all of the input. They consume only as much input as
                     needed to match an alternative of the rule. For example, consider the following rule that
                     matches one, two, or three tokens, depending on the input.
                 </div>
@@ -715,7 +697,7 @@ export class ParserRulesPage extends ComponentBase {
                 <pre><code class="language-typescript">{snippet33}</code></pre>
 
                 <div>
-                    Upon <code>a+3</code>, rule <code>s</code> matches the third alternative. Upon <code>a+b</code>,
+                    Upon <code>a + 3</code>, rule <code>s</code> matches the third alternative. Upon <code>a + b</code>,
                     it matches the second alternative and ignores the final <code>b</code> token. Upon <code>a b</code>,
                     it matches the first alternative, ignoring the <code>b</code> token. The parser does not consume
                     the complete input in the latter two cases because rule <code>s</code> doesn’t explicitly say that

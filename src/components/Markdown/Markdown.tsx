@@ -3,30 +3,29 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import { type ComponentChild } from "preact";
-
-import { Marked, type MarkedOptions } from "marked";
-import { markedHighlight } from "marked-highlight";
-import hljs from "highlight.js";
-
+import { Component, type ComponentChild } from "preact";
 import Markup from "preact-markup";
 
-import { ComponentBase, type IComponentProperties, type IComponentState } from "../ui/Component/ComponentBase";
-import { LoadingIndicator } from "../ui/LoadingIndicator/LoadingIndicator";
-import { Container, Orientation } from "../ui/Container/Container";
+import hljs from "highlight.js";
+import { Marked, type MarkedOptions } from "marked";
+import { markedHighlight } from "marked-highlight";
 
-export interface IMarkdownProperties extends IComponentProperties {
+import { Container, Orientation } from "../ui/Container/Container";
+import { LoadingIndicator } from "../ui/LoadingIndicator/LoadingIndicator";
+
+export interface IMarkdownProperties {
+    path: string;
     fileName: string;
     options?: MarkedOptions;
 }
 
-interface IMarkdownState extends IComponentState {
+interface IMarkdownState {
     pending: boolean;
     markdownContent?: string;
 }
 
 /** A class to render markdown code as html. */
-export class Markdown extends ComponentBase<IMarkdownProperties, IMarkdownState> {
+export class Markdown extends Component<IMarkdownProperties, IMarkdownState> {
     public constructor(props: IMarkdownProperties) {
         super(props);
         this.state = {
@@ -67,7 +66,7 @@ export class Markdown extends ComponentBase<IMarkdownProperties, IMarkdownState>
             markedHighlight({
                 emptyLangClass: "hljs",
                 langPrefix: "hljs language-",
-                highlight: (code, lang, info) => {
+                highlight: (code, lang) => {
                     const language = hljs.getLanguage(lang) ? lang : "plaintext";
 
                     return hljs.highlight(code, { language }).value;
@@ -77,7 +76,12 @@ export class Markdown extends ComponentBase<IMarkdownProperties, IMarkdownState>
 
         return (
             <Container className="pageContent" orientation={Orientation.TopDown}>
-                <Markup {...props} markup={marked.parse(markdownContent, options) as string} trim={false} type="html" />
+                <Markup
+                    {...props}
+                    markup={marked.parse(markdownContent, options) as string}
+                    trim={false}
+                    type="html"
+                />
             </Container>
         );
     }
