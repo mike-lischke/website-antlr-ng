@@ -55,9 +55,10 @@ span.bold {
 .ang .header .logo {
     z-index: 1;
     width: auto;
-    height: 150px;
+    height: 200px;
     padding-right: 40px;
-    margin-top: -50px
+    margin-top: -50px;
+    filter: drop-shadow(2px 2px 5px #00000060);
 }
 
 .ang .header .gradient {

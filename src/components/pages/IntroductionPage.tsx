@@ -3,7 +3,7 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
 
-import logo from "../../assets/images/logo4.svg";
+import logo from "../../assets/images/antlr-ng-logo2.svg";
 
 import { type ComponentChild } from "preact";
 
