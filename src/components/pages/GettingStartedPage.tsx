@@ -37,43 +37,49 @@ Options:
   -h, --help                             display help for command
 `;
 
-const codeGenerationCode = `
-    const getEvalInfoForString = (grammarString: string, pattern: string): string[] => {
-        const g = new Grammar(grammarString);
-        g.tool.process(g, false);
+const codeGenerationCode = `import * as nodeFs from "fs";
+import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
 
-        const evals: string[] = [];
-        if (!g.ast.hasErrors) {
-            const sem = new SemanticPipeline(g);
-            sem.process();
+import { memfs } from "memfs";
+import { useFileSystem, Tool } from "antlr-ng";
 
-            let factory = new ParserATNFactory(g);
-            if (g.isLexer()) {
-                factory = new LexerATNFactory(g as LexerGrammar);
-            }
+// Prepare a fresh virtual file system.
+const { fs } = memfs();
 
-            g.atn = factory.createATN();
+// Tell the tool to use this file system.
+useFileSystem(fs);
 
-            const gen = new CodeGenerator(g);
-            const outputFileST = gen.generateParser(g.tool.toolParameters);
+// Provide the templates in the virtual file system.
+fs.mkdirSync("/templates", { recursive: true });
+... read the files and store them in the virtual fs ...
 
-            const debug = false;
-            const interp = new DebugInterpreter(outputFileST.groupThatCreatedThisInstance,
-                outputFileST.impl!.nativeGroup.errMgr, debug);
-            const scope = new InstanceScope(undefined, outputFileST as ST);
-            const sw = new StringWriter();
-            const out = new AutoIndentWriter(sw);
-            interp.exec(out, scope);
+// A helper function to exectute the paser interpreter using grammar objects.
+const testInterp = (lg: LexerGrammar, g: Grammar, startRule: string, input: string,
+    expectedParseTree: string): ParseTree => {
+    const lexEngine = lg.createLexerInterpreter(CharStream.fromString(input));
+    const tokens = new CommonTokenStream(lexEngine);
+    const parser = g.createParserInterpreter(tokens);
+    const t = parser.parse(g.rules.get(startRule)!.index);
 
-            for (const e of interp.evals) {
-                if (e.includes(pattern)) {
-                    evals.push(e);
-                }
-            }
-        }
+    expect(t.toStringTree(parser), expectedParseTree);
 
-        return evals;
-    };
+    return t;
+};
+
+const lg = new LexerGrammar(
+    "lexer grammar L;\\n" +
+    "A : 'a' ;\\n");
+lg.tool.process(lg, {} as IToolParameters, false);
+
+const g = new Grammar(
+    "parser grammar T;\\n" +
+    "s :  ;",
+    lg);
+g.tool.process(g, {} as IToolParameters, false);
+
+testInterp(lg, g, "s", "", "s");
+testInterp(lg, g, "s", "a", "s");
 `;
 
 export interface IGettingStartedPageProperties extends IComponentProperties {
@@ -146,28 +152,25 @@ export class GettingStartedPage extends ComponentBase<IGettingStartedPagePropert
                     <pre><code className="language-bash">npm i --save-dev antlr-ng</code></pre>
                 </div>
 
-                <h2>Using the Tool Code In Your TypeScript Project</h2>
+                <h2>Using the Tool Code in Your TypeScript Project</h2>
 
                 <div>
-                    This is the other way to use the tool. You can use the parser and lexer generators directly in your
-                    TypeScript project. This is especially useful when you want to generate parsers and lexers at
-                    runtime (e.g. in a web application).
+                    For specialized handling it is useful to run the tool directly. You can load a grammar and process
+                    it, to get its ATN or just do a syntax check. Other options are running unit tests or generate files
+                    in memory. The tool pipeline is running on a virtual filesystem (memfs) which allows to work
+                    independent of Node.js. This fs must be setup to contain all files needed for processing and will
+                    receive generated files. This allows to run <span className="antlrng">antlr-ng</span> in a browser
+                    environment as well. This is the setup used for the <span className="antlrng">antlr-ng</span>
+                    playground on this website.<br /><br />
 
-                    <div className="note">
-                        <b>Note:</b> The current version of <span className="antlrng">antlr-ng</span> uses Node.js
-                        modules for the loading and writing of files. This is not compatible with a browser
-                        environment. A future version will address this issue.
-                    </div>
-
-                    Many unit tests in the <span className="antlrng">antlr-ng</span> project use this approach. Below is
-                    a code snippet from the <code>TestCodeGeneration.spec.ts</code> file:
+                    A typcial approach looks like shown below. We setup a new virtual filesystem. A grammar object
+                    is created from a grammar string and processed.
 
                     <pre><code className="language-typescript">{codeGenerationCode}</code></pre>
 
-                    This code snippet shows how to create a Grammar object from a grammar string, process it, and
-                    generate a parser template from it. This template could be used to generate the parser code. In
-                    this code example, however, an interpreter is used to evaluate the generated code.
-                    <br /><br />
+                    This example (apart from the memfs setup) is taken from
+                    the <a href="https://github.com/mike-lischke/antlr-ng/blob/main/tests/TestParserInterpreter.spec.ts#L27" target="_blank">TestParserInterpreter.spec.ts</a> file
+                    which is part of the unit test suite.<br /><br />
                 </div>
 
             </Container>

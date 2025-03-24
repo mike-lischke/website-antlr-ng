@@ -12,6 +12,7 @@ import { markedHighlight } from "marked-highlight";
 
 import { Container, Orientation } from "../ui/Container/Container";
 import { LoadingIndicator } from "../ui/LoadingIndicator/LoadingIndicator";
+import { CustomLink } from "./CustomLink";
 
 export interface IMarkdownProperties {
     path: string;
@@ -79,6 +80,16 @@ export class Markdown extends Component<IMarkdownProperties, IMarkdownState> {
                 <Markup
                     {...props}
                     markup={marked.parse(markdownContent, options) as string}
+                    components={{
+                        a: (props) => {
+                            return (
+                                <CustomLink
+                                    {...props}
+                                    onLinkClick={this.handleInternalClick}
+                                />
+                            );
+                        }
+                    }}
                     trim={false}
                     type="html"
                 />
@@ -98,6 +109,19 @@ export class Markdown extends Component<IMarkdownProperties, IMarkdownState> {
             return undefined;
         }
     }
+
+    /**
+     * Used for links in markdown files. The CustomLink component filters internal links to identify
+     * links used in the tool API documentation, which is generated directly from the sources and hence uses
+     * markdwon links to other parts of the documentation.
+     *
+     * @param href The href of the clicked link, which is guaranteed to be an internal API doc link.
+     */
+    private handleInternalClick = (href: string): void => {
+        void this.loadMarkdownContent(`/api/${href}`).then((text) => {
+            this.setState({ markdownContent: text });
+        });
+    };
 
     static {
         const keywords = [

@@ -56,7 +56,7 @@ export class IntroductionPage extends ComponentBase<IIntroductionPageProperties>
 
                 <div className="note">
                     <b>Note:</b> This documentation is a work in progress and will be updated as the project
-                    evolves. The individual pages are rendered from markdown files, which have been copied from the
+                    evolves. Some pages are rendered from markdown files, which have been copied from the
                     ANTLR4 documentation and adapted for <span className="antlrng">antlr-ng</span>.
                 </div>
 

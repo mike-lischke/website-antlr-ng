@@ -34,6 +34,7 @@ export enum Page {
     Building,
     Testing,
     Resources,
+    API,
 }
 
 /** A section in the sidebar. */

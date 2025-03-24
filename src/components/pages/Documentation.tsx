@@ -30,6 +30,7 @@ const sections: ISection[] = [
     { title: "Introduction", id: Page.Introduction, urlPath: "/documentation" },
     { title: "Getting Started", id: Page.GettingStarted, urlPath: "/documentation/getting-started" },
     { title: "Other Useful Tools", id: Page.REPL, urlPath: "/documentation/repl" },
+    { title: "Library API", id: Page.API, urlPath: "/documentation/api" },
     {
         title: "Grammars", id: Page.Grammars, urlPath: "/documentation/grammars", children: [
             { title: "Grammar Syntax", id: Page.GrammarSyntax, urlPath: "/documentation/grammars/grammar-syntax" },
@@ -90,6 +91,8 @@ export class Documentation extends ComponentBase<{}, IDocumentationState> {
                     <Route path="/" component={IntroductionPage} />
                     <GettingStartedPage path="/getting-started" />
                     <Markdown path="/repl" fileName="/repl.md" />
+                    <Markdown path="/api" fileName="/api/README.md" />
+                    <Markdown path="/api/enumerations" fileName="/api/enumerations/IssueCode.md" />
                     <GrammarsPage path="/grammars/" />
                     <GrammarSyntaxPage path="/grammars/grammar-syntax" />
                     <OptionsPage path="/grammars/options" />
